@@ -83,8 +83,6 @@ public final class SampleBufferXMedia
    * @param sample The sample buffer
    *
    * @return A stream
-   *
-   * @throws IOException On I/O errors
    */
 
   public static AudioInputStream streamOfSampleBuffer(
