@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class SampleBufferXMediaTest
 {
@@ -236,6 +235,89 @@ public final class SampleBufferXMediaTest
     return files.stream()
       .map(file -> DynamicTest.dynamicTest(file, () -> runForStereoFile(file)))
       .collect(Collectors.toList());
+  }
+
+  @TestFactory
+  public List<DynamicTest> testRoundTripMono()
+    throws Exception
+  {
+    final var files =
+      Files.lines(resource("monos.txt").toPath())
+        .filter(name -> !"sine_mono_8u_be.au".equals(name))
+        .collect(Collectors.toList());
+
+    Assertions.assertTrue(files.size() > 20);
+
+    return files.stream()
+      .map(file -> DynamicTest.dynamicTest(file, () -> roundTripFile(file)))
+      .collect(Collectors.toList());
+  }
+
+  @TestFactory
+  public List<DynamicTest> testRoundTripStereo()
+    throws Exception
+  {
+    final var files =
+      Files.lines(resource("stereos.txt").toPath())
+        .filter(name -> !"sine_stereo_8u_be.au".equals(name))
+        .filter(name -> !"sine_stereo_32fp_le.aiff".equals(name))
+        .filter(name -> !"sine_stereo_32s_le.aiff".equals(name))
+        .filter(name -> !"sine_stereo_32u_le.aiff".equals(name))
+        .collect(Collectors.toList());
+
+    Assertions.assertTrue(files.size() > 20);
+
+    return files.stream()
+      .map(file -> DynamicTest.dynamicTest(file, () -> roundTripFile(file)))
+      .collect(Collectors.toList());
+  }
+
+  private static void roundTripFile(final String file)
+    throws IOException
+  {
+    LOGGER.debug("{}: running", file);
+
+    try (final var stream = AudioSystem.getAudioInputStream(resource(file))) {
+      LOGGER.debug("{}: format: {}", file, stream.getFormat());
+      final var expected_buffer =
+        SampleBufferXMedia.sampleBufferOfStream(stream, SampleBufferXMediaTest::createBuffer);
+
+      Assertions.assertEquals(1200L, expected_buffer.frames());
+
+      try (final var sample_stream = SampleBufferXMedia.streamOfSampleBuffer(expected_buffer)) {
+        final var received_buffer =
+          SampleBufferXMedia.sampleBufferOfStream(
+            sample_stream,
+            SampleBufferXMediaTest::createBuffer);
+
+        Assertions.assertEquals(expected_buffer.frames(), received_buffer.frames());
+        Assertions.assertEquals(expected_buffer.channels(), received_buffer.channels());
+        Assertions.assertEquals(expected_buffer.sampleRate(), received_buffer.sampleRate());
+
+        final var expected_frame = new double[expected_buffer.channels()];
+        final var received_frame = new double[expected_buffer.channels()];
+
+        for (var frame_index = 0L; frame_index < expected_buffer.frames(); ++frame_index) {
+          expected_buffer.frameGetExact(frame_index, expected_frame);
+          received_buffer.frameGetExact(frame_index, received_frame);
+
+          final var currentIndex = frame_index;
+          Assertions.assertArrayEquals(
+            expected_frame,
+            received_frame,
+            () -> new StringBuilder(128)
+              .append("Frame ")
+              .append(currentIndex)
+              .append(" mismatch")
+              .toString());
+        }
+      }
+
+    } catch (final UnsupportedAudioFileException e) {
+      LOGGER.info("Ignoring unsupported audio", e);
+    } finally {
+      LOGGER.debug("{}: finished", file);
+    }
   }
 
   private static void runForMonoFile(final String file)

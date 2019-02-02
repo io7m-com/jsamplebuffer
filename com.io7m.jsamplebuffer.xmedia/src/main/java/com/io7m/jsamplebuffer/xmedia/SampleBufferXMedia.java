@@ -18,10 +18,12 @@ package com.io7m.jsamplebuffer.xmedia;
 
 import com.io7m.jintegers.Signed24;
 import com.io7m.jsamplebuffer.api.SampleBufferProviderType;
+import com.io7m.jsamplebuffer.api.SampleBufferReadableType;
 import com.io7m.jsamplebuffer.api.SampleBufferType;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -73,6 +75,53 @@ public final class SampleBufferXMedia
           "Only 8, 16, 24, and 32-bit samples are supported");
       }
     }
+  }
+
+  /**
+   * Produce a stream from the given sample buffer.
+   *
+   * @param sample The sample buffer
+   *
+   * @return A stream
+   *
+   * @throws IOException On I/O errors
+   */
+
+  public static AudioInputStream streamOfSampleBuffer(
+    final SampleBufferReadableType sample)
+  {
+    final var format =
+      new AudioFormat(
+        AudioFormat.Encoding.PCM_FLOAT,
+        (float) sample.sampleRate(),
+        32,
+        sample.channels(),
+        sample.channels() * 4,
+        (float) sample.sampleRate(),
+        bigEndian());
+
+    final var frame_size = Math.multiplyExact((long) sample.channels(), 4L);
+    final var data_size = Math.toIntExact(Math.multiplyExact(sample.frames(), frame_size));
+    final var data = new byte[data_size];
+    final var buffer = ByteBuffer.wrap(data).order(ByteOrder.nativeOrder());
+
+    final var frame = new double[sample.channels()];
+    for (var frame_index = 0L; frame_index < sample.frames(); ++frame_index) {
+      sample.frameGetExact(frame_index, frame);
+
+      final var frame_base = Math.multiplyExact(frame_index, frame_size);
+      for (var channel = 0; channel < frame.length; ++channel) {
+        final var offset = Math.addExact(frame_base, Math.multiplyExact((long) channel, 4L));
+        buffer.putFloat(Math.toIntExact(offset), (float) frame[channel]);
+      }
+    }
+
+    return new AudioInputStream(new ByteArrayInputStream(data), format, sample.frames());
+  }
+
+  private static boolean bigEndian()
+  {
+    return Objects.equals(ByteOrder.nativeOrder(), ByteOrder.BIG_ENDIAN);
   }
 
   private static SampleBufferType sampleBufferOfStream32(
@@ -176,7 +225,7 @@ public final class SampleBufferXMedia
     for (var frame_index = 0; frame_index < frame_count; ++frame_index) {
       for (var channel_index = 0; channel_index < channels; ++channel_index) {
         final var offset = (frame_index * frame_size) + (channel_index * sample_size);
-        final int read = input_buffer.getInt(offset);
+        final var read = input_buffer.getInt(offset);
         input[channel_index] = signedIntToSignedDouble(read);
       }
       output_buffer.frameSetExact((long) frame_index, input);
@@ -409,80 +458,76 @@ public final class SampleBufferXMedia
     return output_buffer;
   }
 
-  private static double unsignedInt24ToSignedDouble(
-    final int input)
+  private static double unsignedByteToSignedDouble(
+    final byte input)
   {
-    final var di = (double) input;
-    final var d = di / StrictMath.pow(2.0, 24.0);
-    final var r = (d * 2.0) - 1.0;
-    assertNormalized(r);
-    return r;
-  }
-
-  private static double signedInt24ToSignedDouble(
-    final int input)
-  {
-    final var di = (double) input;
-    final var da = Math.abs(di);
-    final var d = da / StrictMath.pow(2.0, 23.0);
-    final var s = (d * 2.0) - 1.0;
-    final var r = s * (double) Math.signum(input);
-    assertNormalized(r);
-    return r;
-  }
-
-  private static double unsignedIntToSignedDouble(
-    final int input)
-  {
-    final var di = (double) input;
-    final var d = di / StrictMath.pow(2.0, 32.0);
-    final var r = (d * 2.0) - 1.0;
-    assertNormalized(r);
-    return r;
-  }
-
-  private static double signedIntToSignedDouble(
-    final int input)
-  {
-    final var di = (double) input;
-    final var da = Math.abs(di);
-    final var d = da / StrictMath.pow(2.0, 31.0);
-    final var s = (d * 2.0) - 1.0;
-    final var r = s * (double) Math.signum(input);
-    assertNormalized(r);
-    return r;
-  }
-
-  private static double signedShortToSignedDouble(
-    final short input)
-  {
-    final var di = (double) input;
-    final var da = Math.abs(di);
-    final var d = da / StrictMath.pow(2.0, 15.0);
-    final var s = (d * 2.0) - 1.0;
-    final var r = s * (double) Math.signum(input);
-    assertNormalized(r);
-    return r;
+    final var input_real = (double) (Byte.toUnsignedInt(input));
+    final var input_max = StrictMath.pow(2.0, 8.0);
+    final var input_min = 0.0;
+    return mapRangeToNormal(input_real, input_min, input_max);
   }
 
   private static double unsignedShortToSignedDouble(
     final short input)
   {
-    final var i = Short.toUnsignedInt(input);
-    final var d = ((double) i) / StrictMath.pow(2.0, 16.0);
-    final var r = (d * 2.0) - 1.0;
-    assertNormalized(r);
-    return r;
+    final var input_real = (double) (Short.toUnsignedInt(input));
+    final var input_max = StrictMath.pow(2.0, 16.0);
+    final var input_min = 0.0;
+    return mapRangeToNormal(input_real, input_min, input_max);
   }
 
-  private static double unsignedByteToSignedDouble(
+  private static double unsignedInt24ToSignedDouble(
+    final int input)
+  {
+    final var input_real = (double) input;
+    final var input_max = StrictMath.pow(2.0, 24.0);
+    final var input_min = 0.0;
+    return mapRangeToNormal(input_real, input_min, input_max);
+  }
+
+  private static double unsignedIntToSignedDouble(
+    final int input)
+  {
+    final var input_real = (double) input;
+    final var input_max = StrictMath.pow(2.0, 32.0);
+    final var input_min = 0.0;
+    return mapRangeToNormal(input_real, input_min, input_max);
+  }
+
+  private static double signedByteToSignedDouble(
     final byte input)
   {
-    final var i = Byte.toUnsignedInt(input);
-    final var d = ((double) i) / StrictMath.pow(2.0, 8.0);
-    final var r = (d * 2.0) - 1.0;
-    assertNormalized(r);
-    return r;
+    final var input_real = (double) input;
+    final var input_max = StrictMath.pow(2.0, 7.0);
+    final var input_min = -input_max;
+    return mapRangeToNormal(input_real, input_min, input_max);
+  }
+
+  private static double signedIntToSignedDouble(
+    final int input)
+  {
+    final var input_real = (double) input;
+    final var input_max = StrictMath.pow(2.0, 31.0);
+    final var input_min = -input_max;
+    return mapRangeToNormal(input_real, input_min, input_max);
+  }
+
+  private static double signedInt24ToSignedDouble(
+    final int input)
+  {
+    final var input_real = (double) input;
+    final var input_max = StrictMath.pow(2.0, 23.0);
+    final var input_min = -input_max;
+    return mapRangeToNormal(input_real, input_min, input_max);
+  }
+
+  private static double signedShortToSignedDouble(
+    final short input)
+  {
+    final var input_real = (double) input;
+    final var input_max = StrictMath.pow(2.0, 15.0);
+    final var input_min = -input_max;
+    return mapRangeToNormal(input_real, input_min, input_max);
   }
 
   private static void assertNormalized(final double r)
@@ -491,20 +536,27 @@ public final class SampleBufferXMedia
     assert r <= 1.0 : r + " <= 1.0";
   }
 
+  private static double mapRangeToNormal(
+    final double input_real,
+    final double input_min,
+    final double input_max)
+  {
+    assert input_real >= input_min;
+    assert input_real <= input_max;
+
+    final var input_range = input_max - input_min;
+
+    final var output_max = 1.0;
+    final var output_min = -1.0;
+    final var output_range = output_max - output_min;
+
+    final var output_value = (((input_real - input_min) * output_range) / input_range) + output_min;
+    assertNormalized(output_value);
+    return output_value;
+  }
+
   private static ByteOrder byteOrderOf(final AudioFormat format)
   {
     return format.isBigEndian() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
-  }
-
-  private static double signedByteToSignedDouble(
-    final byte input)
-  {
-    final var di = (double) input;
-    final var da = Math.abs(di);
-    final var d = da / StrictMath.pow(2.0, 7.0);
-    final var s = (d * 2.0) - 1.0;
-    final var r = s * (double) Math.signum(input);
-    assertNormalized(r);
-    return r;
   }
 }
