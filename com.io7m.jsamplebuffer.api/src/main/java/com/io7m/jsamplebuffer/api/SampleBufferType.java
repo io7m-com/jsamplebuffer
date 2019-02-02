@@ -18,6 +18,10 @@ package com.io7m.jsamplebuffer.api;
 
 import com.io7m.jranges.RangeCheckException;
 
+/**
+ * A readable and writable sample buffer.
+ */
+
 public interface SampleBufferType extends SampleBufferReadableType
 {
   /**
@@ -68,7 +72,8 @@ public interface SampleBufferType extends SampleBufferReadableType
     throws IllegalArgumentException, RangeCheckException;
 
   /**
-   * Set the value of frame {@code index}.
+   * Set the value of frame {@code index}. The input value is assumed to contain one sample for each
+   * of the channels in the frame.
    *
    * @param index The frame index
    * @param value The input

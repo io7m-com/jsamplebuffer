@@ -3,6 +3,7 @@
 <div xmlns="http://www.w3.org/1999/xhtml">
   <ul>
     <li>Functions for safely reading and writing sample data.</li>
+    <li>Convenience functions for constructing sample buffers from <tt>javax.sound</tt> streams.</li>
     <li>ISC license.</li>
     <li>High-coverage automated test suite.</li>
   </ul>

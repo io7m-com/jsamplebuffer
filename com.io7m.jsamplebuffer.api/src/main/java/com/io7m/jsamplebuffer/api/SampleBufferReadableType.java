@@ -18,6 +18,15 @@ package com.io7m.jsamplebuffer.api;
 
 import com.io7m.jranges.RangeCheckException;
 
+/**
+ * A readable sample buffer. A sample buffer is an abstraction over a block of audio data. The
+ * sample buffer pretends that the audio is interleaved (such that all of the samples for a given
+ * frame are stored consecutively) and consists of double-precision floating-point samples.
+ *
+ * Sample buffers may store audio differently internally, and may store using a lower level of
+ * precision than the double-precision API implies.
+ */
+
 public interface SampleBufferReadableType
 {
   /**
@@ -31,6 +40,12 @@ public interface SampleBufferReadableType
    */
 
   long frames();
+
+  /**
+   * @return The sample rate in hz
+   */
+
+  double sampleRate();
 
   /**
    * @return The number of samples in the buffer

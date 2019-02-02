@@ -45,11 +45,13 @@ public final class SampleBufferDouble implements SampleBufferType
   private final ByteBuffer buffer;
   private final long frame_size;
   private final RangeInclusiveL frame_range;
+  private final double sample_rate;
 
   private SampleBufferDouble(
     final int in_channels,
     final long in_frames,
-    final ByteBuffer in_buffer)
+    final ByteBuffer in_buffer,
+    final double in_sample_rate)
   {
     this.channels =
       RangeCheck.checkIncludedInInteger(
@@ -68,15 +70,17 @@ public final class SampleBufferDouble implements SampleBufferType
       RangeInclusiveL.of(0L, in_frames - 1L);
 
     this.buffer = Objects.requireNonNull(in_buffer, "buffer");
+    this.sample_rate = in_sample_rate;
     this.frame_size = Math.multiplyExact((long) this.channels, SAMPLE_SIZE);
   }
 
   /**
    * Create a sample buffer.
    *
-   * @param channels The number of channels per frame
-   * @param frames   The number of frames in the buffer
-   * @param create   A function that allocates a byte buffer for the samples
+   * @param channels    The number of channels per frame
+   * @param frames      The number of frames in the buffer
+   * @param create      A function that allocates a byte buffer for the samples
+   * @param sample_rate The sample rate in hz
    *
    * @return A new sample buffer
    */
@@ -84,6 +88,7 @@ public final class SampleBufferDouble implements SampleBufferType
   public static SampleBufferType createWithByteBuffer(
     final int channels,
     final long frames,
+    final double sample_rate,
     final LongFunction<ByteBuffer> create)
   {
     Objects.requireNonNull(create, "create");
@@ -118,47 +123,55 @@ public final class SampleBufferDouble implements SampleBufferType
           .toString());
     }
 
-    return new SampleBufferDouble(channels, frames, buffer);
+    return new SampleBufferDouble(
+      channels,
+      frames,
+      buffer.order(ByteOrder.nativeOrder()),
+      sample_rate);
   }
 
   /**
    * Create a sample buffer. The underlying buffer will be allocated using direct memory.
    *
-   * @param channels The number of channels per frame
-   * @param frames   The number of frames in the buffer
+   * @param channels    The number of channels per frame
+   * @param frames      The number of frames in the buffer
+   * @param sample_rate The sample rate in hz
    *
    * @return A new sample buffer
    */
 
   public static SampleBufferType createWithDirectBuffer(
     final int channels,
-    final long frames)
+    final long frames,
+    final double sample_rate)
   {
     return createWithByteBuffer(
       channels,
-      frames, bytes ->
-        ByteBuffer.allocateDirect(Math.toIntExact(bytes))
-          .order(ByteOrder.nativeOrder()));
+      frames,
+      sample_rate,
+      bytes -> ByteBuffer.allocateDirect(Math.toIntExact(bytes)));
   }
 
   /**
    * Create a sample buffer. The underlying buffer will be heap-allocated.
    *
-   * @param channels The number of channels per frame
-   * @param frames   The number of frames in the buffer
+   * @param channels    The number of channels per frame
+   * @param frames      The number of frames in the buffer
+   * @param sample_rate The sample rate in hz
    *
    * @return A new sample buffer
    */
 
   public static SampleBufferType createWithHeapBuffer(
     final int channels,
-    final long frames)
+    final long frames,
+    final double sample_rate)
   {
     return createWithByteBuffer(
       channels,
-      frames, bytes ->
-        ByteBuffer.allocate(Math.toIntExact(bytes))
-          .order(ByteOrder.nativeOrder()));
+      frames,
+      sample_rate,
+      bytes -> ByteBuffer.allocate(Math.toIntExact(bytes)));
   }
 
   @Override
@@ -173,7 +186,7 @@ public final class SampleBufferDouble implements SampleBufferType
     final var base = Math.multiplyExact(this.frame_size, index);
     for (var channel_index = 0; channel_index < this.channels; ++channel_index) {
       final var offset = base + (Math.multiplyExact(SAMPLE_SIZE, channel_index));
-      this.buffer.putDouble(Math.toIntExact(offset),  value);
+      this.buffer.putDouble(Math.toIntExact(offset), value);
     }
   }
 
@@ -190,8 +203,8 @@ public final class SampleBufferDouble implements SampleBufferType
       index, "Frame index", this.frame_range, "Frame range");
 
     final var base = Math.multiplyExact(this.frame_size, index);
-    this.buffer.putDouble(Math.toIntExact(base),  c0);
-    this.buffer.putDouble(Math.toIntExact(base + SAMPLE_SIZE),  c1);
+    this.buffer.putDouble(Math.toIntExact(base), c0);
+    this.buffer.putDouble(Math.toIntExact(base + SAMPLE_SIZE), c1);
   }
 
   @Override
@@ -206,7 +219,7 @@ public final class SampleBufferDouble implements SampleBufferType
       index, "Frame index", this.frame_range, "Frame range");
 
     final var base = Math.multiplyExact(this.frame_size, index);
-    this.buffer.putDouble(Math.toIntExact(base),  c0);
+    this.buffer.putDouble(Math.toIntExact(base), c0);
   }
 
   @Override
@@ -225,7 +238,7 @@ public final class SampleBufferDouble implements SampleBufferType
     final var base = Math.multiplyExact(this.frame_size, index);
     for (var channel_index = 0; channel_index < this.channels; ++channel_index) {
       final var offset = base + (Math.multiplyExact(SAMPLE_SIZE, channel_index));
-      this.buffer.putDouble(Math.toIntExact(offset),  value[channel_index]);
+      this.buffer.putDouble(Math.toIntExact(offset), value[channel_index]);
     }
   }
 
@@ -257,6 +270,12 @@ public final class SampleBufferDouble implements SampleBufferType
   public long frames()
   {
     return this.frames;
+  }
+
+  @Override
+  public double sampleRate()
+  {
+    return this.sample_rate;
   }
 
   @Override

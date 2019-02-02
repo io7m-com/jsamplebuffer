@@ -20,7 +20,7 @@
 
 module com.io7m.jsamplebuffer.vanilla
 {
-  requires com.io7m.jsamplebuffer.api;
+  requires transitive com.io7m.jsamplebuffer.api;
 
   exports com.io7m.jsamplebuffer.vanilla;
 }
