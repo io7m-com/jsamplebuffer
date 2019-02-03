@@ -24,6 +24,11 @@
       <artifactId>com.io7m.jsamplebuffer.api</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.io7m.jranges</groupId>
+      <artifactId>com.io7m.jranges.core</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
