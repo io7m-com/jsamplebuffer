@@ -16,22 +16,38 @@
 
 package com.io7m.jsamplebuffer.tests.xmedia;
 
+import com.io7m.jintegers.Signed24;
+import com.io7m.jintegers.Unsigned16;
+import com.io7m.jintegers.Unsigned32;
+import com.io7m.jintegers.Unsigned8;
 import com.io7m.jsamplebuffer.api.SampleBufferType;
 import com.io7m.jsamplebuffer.vanilla.SampleBufferFloat;
 import com.io7m.jsamplebuffer.xmedia.SampleBufferXMedia;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static javax.sound.sampled.AudioFormat.Encoding.ALAW;
+import static javax.sound.sampled.AudioFormat.Encoding.PCM_UNSIGNED;
+import static javax.sound.sampled.AudioFormat.Encoding.ULAW;
 
 public final class SampleBufferXMediaTest
 {
@@ -270,6 +286,204 @@ public final class SampleBufferXMediaTest
     return files.stream()
       .map(file -> DynamicTest.dynamicTest(file, () -> roundTripFile(file)))
       .collect(Collectors.toList());
+  }
+
+  @Test
+  public void testUnsupported0()
+  {
+    final var format = Mockito.mock(AudioFormat.class);
+    Mockito.when(Integer.valueOf(format.getSampleSizeInBits())).thenReturn(Integer.valueOf(1));
+
+    final var stream = Mockito.mock(AudioInputStream.class);
+    Mockito.when(stream.getFormat()).thenReturn(format);
+
+    Assertions.assertThrows(UnsupportedAudioFileException.class, () -> {
+      SampleBufferXMedia.sampleBufferOfStream(stream, SampleBufferXMediaTest::createBuffer);
+    });
+  }
+
+  @TestFactory
+  public Stream<DynamicTest> testUnsupportedALAW()
+  {
+    return IntStream.of(8, 16, 24, 32)
+      .mapToObj(size ->
+                  DynamicTest.dynamicTest("testUnsupportedALAW" + size, () -> {
+                    final var format = Mockito.mock(AudioFormat.class);
+                    Mockito.when(Integer.valueOf(format.getSampleSizeInBits()))
+                      .thenReturn(Integer.valueOf(size));
+                    Mockito.when(format.getEncoding())
+                      .thenReturn(ALAW);
+
+                    final var stream = Mockito.mock(AudioInputStream.class);
+                    Mockito.when(stream.getFormat()).thenReturn(format);
+
+                    Assertions.assertThrows(
+                      UnsupportedAudioFileException.class,
+                      () -> SampleBufferXMedia.sampleBufferOfStream(
+                        stream, SampleBufferXMediaTest::createBuffer));
+                  }));
+  }
+
+  @TestFactory
+  public Stream<DynamicTest> testUnsupportedULAW()
+  {
+    return IntStream.of(8, 16, 24, 32)
+      .mapToObj(size ->
+                  DynamicTest.dynamicTest("testUnsupportedULAW" + size, () -> {
+                    final var format = Mockito.mock(AudioFormat.class);
+                    Mockito.when(Integer.valueOf(format.getSampleSizeInBits()))
+                      .thenReturn(Integer.valueOf(size));
+                    Mockito.when(format.getEncoding())
+                      .thenReturn(ULAW);
+
+                    final var stream = Mockito.mock(AudioInputStream.class);
+                    Mockito.when(stream.getFormat()).thenReturn(format);
+
+                    Assertions.assertThrows(
+                      UnsupportedAudioFileException.class,
+                      () -> SampleBufferXMedia.sampleBufferOfStream(
+                        stream, SampleBufferXMediaTest::createBuffer));
+                  }));
+  }
+
+  @Test
+  public void testStreamUnsigned8()
+    throws Exception
+  {
+    final var format = Mockito.mock(AudioFormat.class);
+    Mockito.when(Integer.valueOf(format.getSampleSizeInBits()))
+      .thenReturn(Integer.valueOf(8));
+    Mockito.when(format.getEncoding())
+      .thenReturn(PCM_UNSIGNED);
+    Mockito.when(Boolean.valueOf(format.isBigEndian()))
+      .thenReturn(Boolean.TRUE);
+    Mockito.when(Integer.valueOf(format.getChannels()))
+      .thenReturn(Integer.valueOf(1));
+
+    final var data = new byte[3];
+    final var buffer = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN);
+
+    Unsigned8.packToBuffer(0, buffer, 0);
+    Unsigned8.packToBuffer(0x7f, buffer, 1);
+    Unsigned8.packToBuffer(0xff, buffer, 2);
+
+    final var stream = Mockito.mock(AudioInputStream.class);
+    Mockito.when(stream.getFormat()).thenReturn(format);
+    Mockito.when(stream.readAllBytes()).thenReturn(data);
+
+    final var sample =
+      SampleBufferXMedia.sampleBufferOfStream(stream, SampleBufferXMediaTest::createBuffer);
+
+    checkNormalizedMono("testStreamUnsigned8", sample, 3L);
+
+    Assertions.assertEquals(-1.0, sample.frameGetExact(0L), 0.01);
+    Assertions.assertEquals(0.0, sample.frameGetExact(1L), 0.01);
+    Assertions.assertEquals(1.0, sample.frameGetExact(2L), 0.01);
+  }
+
+  @Test
+  public void testStreamUnsigned16()
+    throws Exception
+  {
+    final var format = Mockito.mock(AudioFormat.class);
+    Mockito.when(Integer.valueOf(format.getSampleSizeInBits()))
+      .thenReturn(Integer.valueOf(16));
+    Mockito.when(format.getEncoding())
+      .thenReturn(PCM_UNSIGNED);
+    Mockito.when(Boolean.valueOf(format.isBigEndian()))
+      .thenReturn(Boolean.TRUE);
+    Mockito.when(Integer.valueOf(format.getChannels()))
+      .thenReturn(Integer.valueOf(1));
+
+    final var data = new byte[3 * 2];
+    final var buffer = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN);
+
+    Unsigned16.packToBuffer(0, buffer, 0);
+    Unsigned16.packToBuffer(0x7fff, buffer, 2);
+    Unsigned16.packToBuffer(0xffff, buffer, 4);
+
+    final var stream = Mockito.mock(AudioInputStream.class);
+    Mockito.when(stream.getFormat()).thenReturn(format);
+    Mockito.when(stream.readAllBytes()).thenReturn(data);
+
+    final var sample =
+      SampleBufferXMedia.sampleBufferOfStream(stream, SampleBufferXMediaTest::createBuffer);
+
+    checkNormalizedMono("testStreamUnsigned16", sample, 3L);
+
+    Assertions.assertEquals(-1.0, sample.frameGetExact(0L), 0.0001);
+    Assertions.assertEquals(0.0, sample.frameGetExact(1L), 0.0001);
+    Assertions.assertEquals(1.0, sample.frameGetExact(2L), 0.0001);
+  }
+
+  @Test
+  public void testStreamUnsigned24()
+    throws Exception
+  {
+    final var format = Mockito.mock(AudioFormat.class);
+    Mockito.when(Integer.valueOf(format.getSampleSizeInBits()))
+      .thenReturn(Integer.valueOf(24));
+    Mockito.when(format.getEncoding())
+      .thenReturn(PCM_UNSIGNED);
+    Mockito.when(Boolean.valueOf(format.isBigEndian()))
+      .thenReturn(Boolean.TRUE);
+    Mockito.when(Integer.valueOf(format.getChannels()))
+      .thenReturn(Integer.valueOf(1));
+
+    final var data = new byte[3 * 3];
+    final var buffer = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN);
+
+    Signed24.packToBuffer(0, buffer, 0);
+    Signed24.packToBuffer(0x7fffff, buffer, 3);
+    Signed24.packToBuffer(0xffffff, buffer, 6);
+
+    final var stream = Mockito.mock(AudioInputStream.class);
+    Mockito.when(stream.getFormat()).thenReturn(format);
+    Mockito.when(stream.readAllBytes()).thenReturn(data);
+
+    final var sample =
+      SampleBufferXMedia.sampleBufferOfStream(stream, SampleBufferXMediaTest::createBuffer);
+
+    checkNormalizedMono("testStreamUnsigned24", sample, 3L);
+
+    Assertions.assertEquals(-1.0, sample.frameGetExact(0L), 0.000001);
+    Assertions.assertEquals(0.0, sample.frameGetExact(1L), 0.000001);
+    Assertions.assertEquals(1.0, sample.frameGetExact(2L), 0.000001);
+  }
+
+  @Test
+  public void testStreamUnsigned32()
+    throws Exception
+  {
+    final var format = Mockito.mock(AudioFormat.class);
+    Mockito.when(Integer.valueOf(format.getSampleSizeInBits()))
+      .thenReturn(Integer.valueOf(32));
+    Mockito.when(format.getEncoding())
+      .thenReturn(PCM_UNSIGNED);
+    Mockito.when(Boolean.valueOf(format.isBigEndian()))
+      .thenReturn(Boolean.TRUE);
+    Mockito.when(Integer.valueOf(format.getChannels()))
+      .thenReturn(Integer.valueOf(1));
+
+    final var data = new byte[3 * 4];
+    final var buffer = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN);
+
+    Unsigned32.packToBuffer(0L, buffer, 0);
+    Unsigned32.packToBuffer(0x7fffffffL, buffer, 4);
+    Unsigned32.packToBuffer(0xffffffffL, buffer, 8);
+
+    final var stream = Mockito.mock(AudioInputStream.class);
+    Mockito.when(stream.getFormat()).thenReturn(format);
+    Mockito.when(stream.readAllBytes()).thenReturn(data);
+
+    final var sample =
+      SampleBufferXMedia.sampleBufferOfStream(stream, SampleBufferXMediaTest::createBuffer);
+
+    checkNormalizedMono("testStreamUnsigned32", sample, 3L);
+
+    Assertions.assertEquals(-1.0, sample.frameGetExact(0L), 0.000001);
+    Assertions.assertEquals(0.0, sample.frameGetExact(1L), 0.000001);
+    Assertions.assertEquals(1.0, sample.frameGetExact(2L), 0.000001);
   }
 
   private static void roundTripFile(final String file)

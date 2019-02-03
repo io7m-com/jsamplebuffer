@@ -17,15 +17,16 @@
 package com.io7m.jsamplebuffer.xmedia;
 
 import com.io7m.jintegers.Signed24;
+import com.io7m.jintegers.Unsigned32;
 import com.io7m.jsamplebuffer.api.SampleBufferProviderType;
 import com.io7m.jsamplebuffer.api.SampleBufferReadableType;
 import com.io7m.jsamplebuffer.api.SampleBufferType;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Objects;
@@ -50,12 +51,13 @@ public final class SampleBufferXMedia
    * @return A sample buffer
    *
    * @throws IOException On I/O errors
+   * @throws UnsupportedAudioFileException If the audio stream refers to an audio format that cannot be processed
    */
 
   public static SampleBufferType sampleBufferOfStream(
     final AudioInputStream stream,
     final SampleBufferProviderType buffers)
-    throws IOException
+    throws IOException, UnsupportedAudioFileException
   {
     Objects.requireNonNull(stream, "stream");
     Objects.requireNonNull(buffers, "buffers");
@@ -71,7 +73,7 @@ public final class SampleBufferXMedia
       case 32:
         return sampleBufferOfStream32(stream, buffers);
       default: {
-        throw new UnsupportedOperationException(
+        throw new UnsupportedAudioFileException(
           "Only 8, 16, 24, and 32-bit samples are supported");
       }
     }
@@ -125,20 +127,21 @@ public final class SampleBufferXMedia
   private static SampleBufferType sampleBufferOfStream32(
     final AudioInputStream stream,
     final SampleBufferProviderType buffers)
-    throws IOException
+    throws IOException, UnsupportedAudioFileException
   {
     final var format = stream.getFormat();
-    if (Objects.equals(format.getEncoding(), AudioFormat.Encoding.PCM_SIGNED)) {
+    final var encoding = format.getEncoding();
+    if (Objects.equals(encoding, AudioFormat.Encoding.PCM_SIGNED)) {
       return sampleBufferOfStream32Signed(stream, buffers);
     }
-    if (Objects.equals(format.getEncoding(), AudioFormat.Encoding.PCM_UNSIGNED)) {
+    if (Objects.equals(encoding, AudioFormat.Encoding.PCM_UNSIGNED)) {
       return sampleBufferOfStream32Unsigned(stream, buffers);
     }
-    if (Objects.equals(format.getEncoding(), AudioFormat.Encoding.PCM_FLOAT)) {
+    if (Objects.equals(encoding, AudioFormat.Encoding.PCM_FLOAT)) {
       return sampleBufferOfStream32Float(stream, buffers);
     }
 
-    throw new UnsupportedEncodingException();
+    throw new UnsupportedAudioFileException("Unsupported encoding: " + encoding);
   }
 
   private static SampleBufferType sampleBufferOfStream32Unsigned(
@@ -163,7 +166,7 @@ public final class SampleBufferXMedia
     for (var frame_index = 0; frame_index < frame_count; ++frame_index) {
       for (var channel_index = 0; channel_index < channels; ++channel_index) {
         final var offset = (frame_index * frame_size) + (channel_index * sample_size);
-        final var read = input_buffer.getInt(offset);
+        final var read = Unsigned32.unpackFromBuffer(input_buffer, offset);
         input[channel_index] = unsignedIntToSignedDouble(read);
       }
       output_buffer.frameSetExact((long) frame_index, input);
@@ -294,46 +297,49 @@ public final class SampleBufferXMedia
   private static SampleBufferType sampleBufferOfStream24(
     final AudioInputStream stream,
     final SampleBufferProviderType buffers)
-    throws IOException
+    throws IOException, UnsupportedAudioFileException
   {
     final var format = stream.getFormat();
-    if (Objects.equals(format.getEncoding(), AudioFormat.Encoding.PCM_SIGNED)) {
+    final var encoding = format.getEncoding();
+    if (Objects.equals(encoding, AudioFormat.Encoding.PCM_SIGNED)) {
       return sampleBufferOfStream24Signed(stream, buffers);
     }
-    if (Objects.equals(format.getEncoding(), AudioFormat.Encoding.PCM_UNSIGNED)) {
+    if (Objects.equals(encoding, AudioFormat.Encoding.PCM_UNSIGNED)) {
       return sampleBufferOfStream24Unsigned(stream, buffers);
     }
-    throw new UnsupportedEncodingException();
+    throw new UnsupportedAudioFileException("Unsupported encoding: " + encoding);
   }
 
   private static SampleBufferType sampleBufferOfStream16(
     final AudioInputStream stream,
     final SampleBufferProviderType buffers)
-    throws IOException
+    throws IOException, UnsupportedAudioFileException
   {
     final var format = stream.getFormat();
-    if (Objects.equals(format.getEncoding(), AudioFormat.Encoding.PCM_SIGNED)) {
+    final var encoding = format.getEncoding();
+    if (Objects.equals(encoding, AudioFormat.Encoding.PCM_SIGNED)) {
       return sampleBufferOfStream16Signed(stream, buffers);
     }
-    if (Objects.equals(format.getEncoding(), AudioFormat.Encoding.PCM_UNSIGNED)) {
+    if (Objects.equals(encoding, AudioFormat.Encoding.PCM_UNSIGNED)) {
       return sampleBufferOfStream16Unsigned(stream, buffers);
     }
-    throw new UnsupportedEncodingException();
+    throw new UnsupportedAudioFileException("Unsupported encoding: " + encoding);
   }
 
   private static SampleBufferType sampleBufferOfStream8(
     final AudioInputStream stream,
     final SampleBufferProviderType buffers)
-    throws IOException
+    throws IOException, UnsupportedAudioFileException
   {
     final var format = stream.getFormat();
-    if (Objects.equals(format.getEncoding(), AudioFormat.Encoding.PCM_SIGNED)) {
+    final var encoding = format.getEncoding();
+    if (Objects.equals(encoding, AudioFormat.Encoding.PCM_SIGNED)) {
       return sampleBufferOfStream8Signed(stream, buffers);
     }
-    if (Objects.equals(format.getEncoding(), AudioFormat.Encoding.PCM_UNSIGNED)) {
+    if (Objects.equals(encoding, AudioFormat.Encoding.PCM_UNSIGNED)) {
       return sampleBufferOfStream8Unsigned(stream, buffers);
     }
-    throw new UnsupportedEncodingException();
+    throw new UnsupportedAudioFileException("Unsupported encoding: " + encoding);
   }
 
   private static SampleBufferType sampleBufferOfStream8Unsigned(
@@ -484,7 +490,7 @@ public final class SampleBufferXMedia
   }
 
   private static double unsignedIntToSignedDouble(
-    final int input)
+    final long input)
   {
     final var input_real = (double) input;
     final var input_max = StrictMath.pow(2.0, 32.0);
