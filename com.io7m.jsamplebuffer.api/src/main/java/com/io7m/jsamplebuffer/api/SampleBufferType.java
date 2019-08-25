@@ -16,10 +16,11 @@
 
 package com.io7m.jsamplebuffer.api;
 
-import com.io7m.jranges.RangeCheckException;
-
 /**
  * A readable and writable sample buffer.
+ *
+ * All methods that take sample/frame indices as arguments throw {@code
+ * com.io7m.jranges.RangeCheckException} exceptions if the indices are out of range.
  */
 
 public interface SampleBufferType extends SampleBufferReadableType
@@ -30,14 +31,11 @@ public interface SampleBufferType extends SampleBufferReadableType
    *
    * @param index The frame index
    * @param value The input
-   *
-   * @throws com.io7m.jranges.RangeCheckException If {@code index >= frames()}
    */
 
   void frameSetAll(
     long index,
-    double value)
-    throws RangeCheckException;
+    double value);
 
   /**
    * Set the value of frame {@code index}.
@@ -45,14 +43,13 @@ public interface SampleBufferType extends SampleBufferReadableType
    * @param index The frame index
    * @param c0    The input for channel 0
    *
-   * @throws RangeCheckException      If {@code index >= frames()}
    * @throws IllegalArgumentException If {@code channels() != 1}
    */
 
   void frameSetExact(
     long index,
     double c0)
-    throws IllegalArgumentException, RangeCheckException;
+    throws IllegalArgumentException;
 
   /**
    * Set the value of frame {@code index}.
@@ -61,7 +58,6 @@ public interface SampleBufferType extends SampleBufferReadableType
    * @param c0    The input for channel 0
    * @param c1    The input for channel 1
    *
-   * @throws RangeCheckException      If {@code index >= frames()}
    * @throws IllegalArgumentException If {@code channels() != 2}
    */
 
@@ -69,7 +65,7 @@ public interface SampleBufferType extends SampleBufferReadableType
     long index,
     double c0,
     double c1)
-    throws IllegalArgumentException, RangeCheckException;
+    throws IllegalArgumentException;
 
   /**
    * Set the value of frame {@code index}. The input value is assumed to contain one sample for each
@@ -78,12 +74,11 @@ public interface SampleBufferType extends SampleBufferReadableType
    * @param index The frame index
    * @param value The input
    *
-   * @throws RangeCheckException      If {@code index >= frames()}
    * @throws IllegalArgumentException If {@code value.length != channels()}
    */
 
   void frameSetExact(
     long index,
     double[] value)
-    throws IllegalArgumentException, RangeCheckException;
+    throws IllegalArgumentException;
 }

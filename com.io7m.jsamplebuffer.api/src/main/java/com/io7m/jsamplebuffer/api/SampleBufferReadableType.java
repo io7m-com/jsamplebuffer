@@ -16,8 +16,6 @@
 
 package com.io7m.jsamplebuffer.api;
 
-import com.io7m.jranges.RangeCheckException;
-
 /**
  * A readable sample buffer. A sample buffer is an abstraction over a block of audio data. The
  * sample buffer pretends that the audio is interleaved (such that all of the samples for a given
@@ -25,6 +23,9 @@ import com.io7m.jranges.RangeCheckException;
  *
  * Sample buffers may store audio differently internally, and may store using a lower level of
  * precision than the double-precision API implies.
+ *
+ * All methods that take sample/frame indices as arguments throw
+ * {@code com.io7m.jranges.RangeCheckException} exceptions if the indices are out of range.
  */
 
 public interface SampleBufferReadableType
@@ -63,13 +64,11 @@ public interface SampleBufferReadableType
    * @param output The output
    *
    * @throws IllegalArgumentException If {@code output.length != channels()}
-   * @throws RangeCheckException      If {@code index >= frames()}
    */
 
   void frameGetExact(
     long index,
-    double[] output)
-    throws RangeCheckException;
+    double[] output);
 
   /**
    * Get the value of frame {@code index}.
@@ -79,10 +78,8 @@ public interface SampleBufferReadableType
    * @return The value in the frame
    *
    * @throws IllegalArgumentException If {@code 1 != channels()}
-   * @throws RangeCheckException      If {@code index >= frames()}
    */
 
   double frameGetExact(
-    long index)
-    throws RangeCheckException;
+    long index);
 }
