@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.io7m.primogenitor</groupId>
+    <artifactId>com.io7m.primogenitor.full</artifactId>
+    <version>3.5.0</version>
+  </parent>
+
+  <groupId>com.io7m.jsamplebuffer</groupId>
+  <artifactId>com.io7m.jsamplebuffer</artifactId>
+  <version>0.0.1</version>
+  <packaging>pom</packaging>
+
+  <name>com.io7m.jsamplebuffer</name>
+  <description>Audio sample buffer types</description>
+  <url>http://github.com/io7m/jsamplebuffer</url>
+
+  <inceptionYear>2019</inceptionYear>
+
+  <modules>
+    <module>com.io7m.jsamplebuffer.api</module>
+    <module>com.io7m.jsamplebuffer.vanilla</module>
+    <module>com.io7m.jsamplebuffer.tests</module>
+    <module>com.io7m.jsamplebuffer.xmedia</module>
+    <module>com.io7m.jsamplebuffer.documentation</module>
+  </modules>
+
+  <properties>
+    <com.codacy.id>e48bab052e5844b6ada6bd7e438a7e03</com.codacy.id>
+    <io7m.api.previousVersion>0.0.1</io7m.api.previousVersion>
+  </properties>
+
+  <licenses>
+    <license>
+      <name>ISC License</name>
+      <url>http://io7m.com/license/isc.txt</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>https://github.com/io7m/jsamplebuffer</url>
+    <connection>scm:git:https://github.com/io7m/jsamplebuffer</connection>
+    <developerConnection>scm:git:https://github.com/io7m/jsamplebuffer</developerConnection>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>io7m</id>
+      <name>io7m</name>
+      <email>code@io7m.com</email>
+      <url>http://io7m.com</url>
+    </developer>
+  </developers>
+
+  <issueManagement>
+    <url>http://github.com/io7m/jsamplebuffer/issues</url>
+    <system>GitHub Issues</system>
+  </issueManagement>
+
+  <distributionManagement>
+    <site>
+      <id>io7m.com</id>
+      <name>io7m.com</name>
+      <url>https://www.io7m.com/software/jsamplebuffer</url>
+    </site>
+    <repository>
+      <id>sonatype-nexus-staging</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <ciManagement>
+    <system>Travis CI</system>
+    <url>https://travis-ci.org/io7m/jsamplebuffer</url>
+  </ciManagement>
+
+  <prerequisites>
+    <maven>3.0.4</maven>
+  </prerequisites>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.immutables</groupId>
+        <artifactId>value</artifactId>
+        <version>2.8.3</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.immutables.style</groupId>
+        <artifactId>com.io7m.immutables.style</artifactId>
+        <version>0.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.annotation.bundle</artifactId>
+        <version>1.0.0</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.io7m.primogenitor</groupId>
+        <artifactId>com.io7m.primogenitor.support</artifactId>
+        <version>3.5.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.jranges</groupId>
+        <artifactId>com.io7m.jranges.core</artifactId>
+        <version>4.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.jintegers</groupId>
+        <artifactId>com.io7m.jintegers.core</artifactId>
+        <version>2.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.3.0-alpha5</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>5.6.0-M1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>5.6.0-M1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>3.2.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <!-- Generate a site -->
+      <plugin>
+        <groupId>com.io7m.minisite</groupId>
+        <artifactId>com.io7m.minisite.maven_plugin</artifactId>
+        <inherited>false</inherited>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

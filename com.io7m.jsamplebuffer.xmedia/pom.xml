@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>com.io7m.jsamplebuffer</artifactId>
+    <groupId>com.io7m.jsamplebuffer</groupId>
+    <version>0.0.1</version>
+  </parent>
+
+  <artifactId>com.io7m.jsamplebuffer.xmedia</artifactId>
+  <packaging>jar</packaging>
+
+  <name>com.io7m.jsamplebuffer.xmedia</name>
+  <description>Audio sample buffer types (javax.media Support)</description>
+  <url>http://github.com/io7m/jsamplebuffer</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>com.io7m.jsamplebuffer.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.io7m.jintegers</groupId>
+      <artifactId>com.io7m.jintegers.core</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
