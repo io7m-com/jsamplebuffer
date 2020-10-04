@@ -80,8 +80,8 @@
   </distributionManagement>
 
   <ciManagement>
-    <system>Travis CI</system>
-    <url>https://travis-ci.org/io7m/jsamplebuffer</url>
+    <system>GitHub Actions</system>
+    <url>https://github.com/jsamplebuffer/actions</url>
   </ciManagement>
 
   <prerequisites>
