@@ -20,7 +20,6 @@
 
 module com.io7m.jsamplebuffer.api
 {
-  requires transitive com.io7m.jranges.core;
   requires static org.osgi.annotation.bundle;
 
   exports com.io7m.jsamplebuffer.api;

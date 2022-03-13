@@ -22,5 +22,7 @@ module com.io7m.jsamplebuffer.vanilla
 {
   requires transitive com.io7m.jsamplebuffer.api;
 
+  requires com.io7m.jranges.core;
+
   exports com.io7m.jsamplebuffer.vanilla;
 }

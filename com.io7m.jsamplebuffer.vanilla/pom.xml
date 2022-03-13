@@ -16,7 +16,7 @@
 
   <name>com.io7m.jsamplebuffer.vanilla</name>
   <description>Audio sample buffer types (Vanilla)</description>
-  <url>http://github.com/io7m/jsamplebuffer</url>
+  <url>https://github.com/io7m/jsamplebuffer</url>
 
   <dependencies>
     <dependency>
@@ -29,15 +29,11 @@
       <groupId>com.io7m.jranges</groupId>
       <artifactId>com.io7m.jranges.core</artifactId>
     </dependency>
-  </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
+    <dependency>
+      <groupId>com.io7m.jranges</groupId>
+      <artifactId>com.io7m.jranges.core</artifactId>
+    </dependency>
+  </dependencies>
 
 </project>
