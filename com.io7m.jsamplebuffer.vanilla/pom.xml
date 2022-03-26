@@ -29,11 +29,6 @@
       <groupId>com.io7m.jranges</groupId>
       <artifactId>com.io7m.jranges.core</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>com.io7m.jranges</groupId>
-      <artifactId>com.io7m.jranges.core</artifactId>
-    </dependency>
   </dependencies>
 
 </project>
