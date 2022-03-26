@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.io7m.primogenitor</groupId>
     <artifactId>com.io7m.primogenitor.full</artifactId>
-    <version>7.0.0-beta0005</version>
+    <version>7.0.0</version>
   </parent>
 
   <groupId>com.io7m.jsamplebuffer</groupId>
@@ -32,7 +32,6 @@
   </modules>
 
   <properties>
-    <com.codacy.id>e48bab052e5844b6ada6bd7e438a7e03</com.codacy.id>
     <io7m.api.previousVersion>0.0.1</io7m.api.previousVersion>
   </properties>
 
@@ -109,7 +108,7 @@
       <dependency>
         <groupId>com.io7m.primogenitor</groupId>
         <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>7.0.0-beta0005</version>
+        <version>7.0.0</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.jranges</groupId>
