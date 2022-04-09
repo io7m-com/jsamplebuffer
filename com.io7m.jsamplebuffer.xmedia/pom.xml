@@ -8,7 +8,7 @@
   <parent>
     <artifactId>com.io7m.jsamplebuffer</artifactId>
     <groupId>com.io7m.jsamplebuffer</groupId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.2</version>
   </parent>
 
   <artifactId>com.io7m.jsamplebuffer.xmedia</artifactId>
