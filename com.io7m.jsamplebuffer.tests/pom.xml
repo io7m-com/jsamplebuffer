@@ -8,7 +8,7 @@
   <parent>
     <artifactId>com.io7m.jsamplebuffer</artifactId>
     <groupId>com.io7m.jsamplebuffer</groupId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
   </parent>
 
   <artifactId>com.io7m.jsamplebuffer.tests</artifactId>
@@ -16,7 +16,7 @@
 
   <name>com.io7m.jsamplebuffer.tests</name>
   <description>Audio sample buffer types (Unit tests)</description>
-  <url>http://github.com/io7m/jsamplebuffer</url>
+  <url>https://www.io7m.com/software/jsamplebuffer</url>
 
   <properties>
     <mdep.analyze.skip>true</mdep.analyze.skip>
