@@ -24,11 +24,15 @@ import com.io7m.jsamplebuffer.api.SampleBufferType;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 
 /**
@@ -43,15 +47,44 @@ public final class SXMSampleBuffers
   }
 
   /**
-   * Read all the given stream into a sample buffer.
+   * Read the given file into a sample buffer.
+   *
+   * @param file    The file
+   * @param buffers A provider of buffers
+   *
+   * @return A sample buffer
+   *
+   * @throws IOException                   On I/O errors
+   * @throws UnsupportedAudioFileException If the file refers to an audio format
+   *                                       that cannot be processed
+   */
+
+  public static SampleBufferType sampleBufferOfFile(
+    final Path file,
+    final SampleBufferFactoryType buffers)
+    throws IOException, UnsupportedAudioFileException
+  {
+    try (var stream = Files.newInputStream(file)) {
+      try (var buffered = new BufferedInputStream(stream)) {
+        try (var audioStream = AudioSystem.getAudioInputStream(buffered)) {
+          return sampleBufferOfStream(audioStream, buffers);
+        }
+      }
+    }
+  }
+
+  /**
+   * Read the given stream into a sample buffer.
    *
    * @param stream  The stream
    * @param buffers A provider of buffers
    *
    * @return A sample buffer
    *
-   * @throws IOException On I/O errors
-   * @throws UnsupportedAudioFileException If the audio stream refers to an audio format that cannot be processed
+   * @throws IOException                   On I/O errors
+   * @throws UnsupportedAudioFileException If the audio stream refers to an
+   *                                       audio format that cannot be
+   *                                       processed
    */
 
   public static SampleBufferType sampleBufferOfStream(
@@ -102,7 +135,9 @@ public final class SXMSampleBuffers
       );
 
     final var frame_size = Math.multiplyExact((long) sample.channels(), 4L);
-    final var data_size = Math.toIntExact(Math.multiplyExact(sample.frames(), frame_size));
+    final var data_size = Math.toIntExact(Math.multiplyExact(
+      sample.frames(),
+      frame_size));
     final var data = new byte[data_size];
     final var buffer = ByteBuffer.wrap(data).order(ByteOrder.nativeOrder());
 
@@ -112,12 +147,19 @@ public final class SXMSampleBuffers
 
       final var frame_base = Math.multiplyExact(frame_index, frame_size);
       for (var channel = 0; channel < frame.length; ++channel) {
-        final var offset = Math.addExact(frame_base, Math.multiplyExact((long) channel, 4L));
+        final var offset = Math.addExact(
+          frame_base,
+          Math.multiplyExact(
+            (long) channel,
+            4L));
         buffer.putFloat(Math.toIntExact(offset), (float) frame[channel]);
       }
     }
 
-    return new AudioInputStream(new ByteArrayInputStream(data), format, sample.frames());
+    return new AudioInputStream(
+      new ByteArrayInputStream(data),
+      format,
+      sample.frames());
   }
 
   private static boolean bigEndian()
@@ -161,7 +203,10 @@ public final class SXMSampleBuffers
     final var frame_count = input_buffer.capacity() / frame_size;
 
     final var output_buffer =
-      buffers.createBuffer(channels, (long) frame_count, (double) format.getSampleRate());
+      buffers.createBuffer(
+        channels,
+        (long) frame_count,
+        (double) format.getSampleRate());
     final var input = new double[channels];
 
     for (var frame_index = 0; frame_index < frame_count; ++frame_index) {
@@ -191,7 +236,10 @@ public final class SXMSampleBuffers
     final var frame_count = input_buffer.capacity() / frame_size;
 
     final var output_buffer =
-      buffers.createBuffer(channels, (long) frame_count, (double) format.getSampleRate());
+      buffers.createBuffer(
+        channels,
+        (long) frame_count,
+        (double) format.getSampleRate());
     final var input = new double[channels];
 
     for (var frame_index = 0; frame_index < frame_count; ++frame_index) {
@@ -221,7 +269,10 @@ public final class SXMSampleBuffers
     final var frame_count = input_buffer.capacity() / frame_size;
 
     final var output_buffer =
-      buffers.createBuffer(channels, (long) frame_count, (double) format.getSampleRate());
+      buffers.createBuffer(
+        channels,
+        (long) frame_count,
+        (double) format.getSampleRate());
     final var input = new double[channels];
 
     for (var frame_index = 0; frame_index < frame_count; ++frame_index) {
@@ -251,7 +302,10 @@ public final class SXMSampleBuffers
     final var frame_count = input_buffer.capacity() / frame_size;
 
     final var output_buffer =
-      buffers.createBuffer(channels, (long) frame_count, (double) format.getSampleRate());
+      buffers.createBuffer(
+        channels,
+        (long) frame_count,
+        (double) format.getSampleRate());
     final var input = new double[channels];
 
     for (var frame_index = 0; frame_index < frame_count; ++frame_index) {
@@ -281,13 +335,18 @@ public final class SXMSampleBuffers
     final var frame_count = input_buffer.capacity() / frame_size;
 
     final var output_buffer =
-      buffers.createBuffer(channels, (long) frame_count, (double) format.getSampleRate());
+      buffers.createBuffer(
+        channels,
+        (long) frame_count,
+        (double) format.getSampleRate());
     final var input = new double[channels];
 
     for (var frame_index = 0; frame_index < frame_count; ++frame_index) {
       for (var channel_index = 0; channel_index < channels; ++channel_index) {
         final var offset = (frame_index * frame_size) + (channel_index * sample_size);
-        final var read = Signed24.unpackFromBuffer(input_buffer, offset) & 0xffffff;
+        final var read = Signed24.unpackFromBuffer(
+          input_buffer,
+          offset) & 0xffffff;
         input[channel_index] = unsignedInt24ToSignedDouble(read);
       }
       output_buffer.frameSetExact((long) frame_index, input);
@@ -359,7 +418,10 @@ public final class SXMSampleBuffers
     final var frame_count = input_buffer.capacity() / frame_size;
 
     final var output_buffer =
-      buffers.createBuffer(channels, (long) frame_count, (double) format.getSampleRate());
+      buffers.createBuffer(
+        channels,
+        (long) frame_count,
+        (double) format.getSampleRate());
     final var input = new double[channels];
 
     for (var frame_index = 0; frame_index < frame_count; ++frame_index) {
@@ -389,7 +451,10 @@ public final class SXMSampleBuffers
     final var frame_count = input_buffer.capacity() / frame_size;
 
     final var output_buffer =
-      buffers.createBuffer(channels, (long) frame_count, (double) format.getSampleRate());
+      buffers.createBuffer(
+        channels,
+        (long) frame_count,
+        (double) format.getSampleRate());
     final var input = new double[channels];
 
     for (var frame_index = 0; frame_index < frame_count; ++frame_index) {
@@ -419,7 +484,10 @@ public final class SXMSampleBuffers
     final var frame_count = input_buffer.capacity() / frame_size;
 
     final var output_buffer =
-      buffers.createBuffer(channels, (long) frame_count, (double) format.getSampleRate());
+      buffers.createBuffer(
+        channels,
+        (long) frame_count,
+        (double) format.getSampleRate());
     final var input = new double[channels];
 
     for (var frame_index = 0; frame_index < frame_count; ++frame_index) {
@@ -449,7 +517,10 @@ public final class SXMSampleBuffers
     final var frame_count = input_buffer.capacity() / frame_size;
 
     final var output_buffer =
-      buffers.createBuffer(channels, (long) frame_count, (double) format.getSampleRate());
+      buffers.createBuffer(
+        channels,
+        (long) frame_count,
+        (double) format.getSampleRate());
     final var input = new double[channels];
 
     for (var frame_index = 0; frame_index < frame_count; ++frame_index) {

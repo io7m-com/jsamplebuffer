@@ -21,6 +21,7 @@ import com.io7m.jintegers.Unsigned16;
 import com.io7m.jintegers.Unsigned32;
 import com.io7m.jintegers.Unsigned8;
 import com.io7m.jsamplebuffer.api.SampleBufferType;
+import com.io7m.jsamplebuffer.vanilla.SampleBufferDouble;
 import com.io7m.jsamplebuffer.vanilla.SampleBufferFloat;
 import com.io7m.jsamplebuffer.xmedia.SXMSampleBuffers;
 import org.junit.jupiter.api.Assertions;
@@ -216,7 +217,10 @@ public final class SXMSampleBuffersTest
     final long frames,
     final double sample_rate)
   {
-    return SampleBufferFloat.createWithHeapBuffer(channels, frames, sample_rate);
+    return SampleBufferFloat.createWithHeapBuffer(
+      channels,
+      frames,
+      sample_rate);
   }
 
   @TestFactory
@@ -289,17 +293,48 @@ public final class SXMSampleBuffersTest
       .collect(Collectors.toList());
   }
 
+  @TestFactory
+  public List<DynamicTest> testOpenFiles()
+    throws Exception
+  {
+    final Stream<String> files =
+      Stream.of(
+        "sine_mono.wav",
+        "sine_stereo.wav"
+      );
+
+    return files
+      .map(file -> DynamicTest.dynamicTest(file, () -> this.openFile(file)))
+      .collect(Collectors.toList());
+  }
+
+  private void openFile(
+    final String fileName)
+    throws IOException, UnsupportedAudioFileException
+  {
+    final var file =
+      resource(fileName);
+    final var buffer =
+      SXMSampleBuffers.sampleBufferOfFile(
+        file.toPath(),
+        SampleBufferDouble::createWithHeapBuffer
+      );
+  }
+
   @Test
   public void testUnsupported0()
   {
     final var format = Mockito.mock(AudioFormat.class);
-    Mockito.when(Integer.valueOf(format.getSampleSizeInBits())).thenReturn(Integer.valueOf(1));
+    Mockito.when(Integer.valueOf(format.getSampleSizeInBits())).thenReturn(
+      Integer.valueOf(1));
 
     final var stream = Mockito.mock(AudioInputStream.class);
     Mockito.when(stream.getFormat()).thenReturn(format);
 
     Assertions.assertThrows(UnsupportedAudioFileException.class, () -> {
-      SXMSampleBuffers.sampleBufferOfStream(stream, SXMSampleBuffersTest::createBuffer);
+      SXMSampleBuffers.sampleBufferOfStream(
+        stream,
+        SXMSampleBuffersTest::createBuffer);
     });
   }
 
@@ -373,7 +408,9 @@ public final class SXMSampleBuffersTest
     Mockito.when(stream.readAllBytes()).thenReturn(data);
 
     final var sample =
-      SXMSampleBuffers.sampleBufferOfStream(stream, SXMSampleBuffersTest::createBuffer);
+      SXMSampleBuffers.sampleBufferOfStream(
+        stream,
+        SXMSampleBuffersTest::createBuffer);
 
     checkNormalizedMono("testStreamUnsigned8", sample, 3L);
 
@@ -408,7 +445,9 @@ public final class SXMSampleBuffersTest
     Mockito.when(stream.readAllBytes()).thenReturn(data);
 
     final var sample =
-      SXMSampleBuffers.sampleBufferOfStream(stream, SXMSampleBuffersTest::createBuffer);
+      SXMSampleBuffers.sampleBufferOfStream(
+        stream,
+        SXMSampleBuffersTest::createBuffer);
 
     checkNormalizedMono("testStreamUnsigned16", sample, 3L);
 
@@ -443,7 +482,9 @@ public final class SXMSampleBuffersTest
     Mockito.when(stream.readAllBytes()).thenReturn(data);
 
     final var sample =
-      SXMSampleBuffers.sampleBufferOfStream(stream, SXMSampleBuffersTest::createBuffer);
+      SXMSampleBuffers.sampleBufferOfStream(
+        stream,
+        SXMSampleBuffersTest::createBuffer);
 
     checkNormalizedMono("testStreamUnsigned24", sample, 3L);
 
@@ -478,7 +519,9 @@ public final class SXMSampleBuffersTest
     Mockito.when(stream.readAllBytes()).thenReturn(data);
 
     final var sample =
-      SXMSampleBuffers.sampleBufferOfStream(stream, SXMSampleBuffersTest::createBuffer);
+      SXMSampleBuffers.sampleBufferOfStream(
+        stream,
+        SXMSampleBuffersTest::createBuffer);
 
     checkNormalizedMono("testStreamUnsigned32", sample, 3L);
 
@@ -495,19 +538,28 @@ public final class SXMSampleBuffersTest
     try (final var stream = AudioSystem.getAudioInputStream(resource(file))) {
       LOGGER.debug("{}: format: {}", file, stream.getFormat());
       final var expected_buffer =
-        SXMSampleBuffers.sampleBufferOfStream(stream, SXMSampleBuffersTest::createBuffer);
+        SXMSampleBuffers.sampleBufferOfStream(
+          stream,
+          SXMSampleBuffersTest::createBuffer);
 
       Assertions.assertEquals(1200L, expected_buffer.frames());
 
-      try (final var sample_stream = SXMSampleBuffers.streamOfSampleBuffer(expected_buffer)) {
+      try (final var sample_stream = SXMSampleBuffers.streamOfSampleBuffer(
+        expected_buffer)) {
         final var received_buffer =
           SXMSampleBuffers.sampleBufferOfStream(
             sample_stream,
             SXMSampleBuffersTest::createBuffer);
 
-        Assertions.assertEquals(expected_buffer.frames(), received_buffer.frames());
-        Assertions.assertEquals(expected_buffer.channels(), received_buffer.channels());
-        Assertions.assertEquals(expected_buffer.sampleRate(), received_buffer.sampleRate());
+        Assertions.assertEquals(
+          expected_buffer.frames(),
+          received_buffer.frames());
+        Assertions.assertEquals(
+          expected_buffer.channels(),
+          received_buffer.channels());
+        Assertions.assertEquals(
+          expected_buffer.sampleRate(),
+          received_buffer.sampleRate());
 
         final var expected_frame = new double[expected_buffer.channels()];
         final var received_frame = new double[expected_buffer.channels()];
@@ -543,7 +595,9 @@ public final class SXMSampleBuffersTest
     try (final var stream = AudioSystem.getAudioInputStream(resource(file))) {
       LOGGER.debug("{}: format: {}", file, stream.getFormat());
       final var buffer =
-        SXMSampleBuffers.sampleBufferOfStream(stream, SXMSampleBuffersTest::createBuffer);
+        SXMSampleBuffers.sampleBufferOfStream(
+          stream,
+          SXMSampleBuffersTest::createBuffer);
       final var count = 1200L;
       Assertions.assertEquals(count, buffer.frames());
       Assertions.assertEquals(1, buffer.channels());
@@ -564,7 +618,9 @@ public final class SXMSampleBuffersTest
     try (final var stream = AudioSystem.getAudioInputStream(resource(file))) {
       LOGGER.debug("{}: format: {}", file, stream.getFormat());
       final var buffer =
-        SXMSampleBuffers.sampleBufferOfStream(stream, SXMSampleBuffersTest::createBuffer);
+        SXMSampleBuffers.sampleBufferOfStream(
+          stream,
+          SXMSampleBuffersTest::createBuffer);
       final var count = 1200L;
       Assertions.assertEquals(count, buffer.frames());
       Assertions.assertEquals(2, buffer.channels());
