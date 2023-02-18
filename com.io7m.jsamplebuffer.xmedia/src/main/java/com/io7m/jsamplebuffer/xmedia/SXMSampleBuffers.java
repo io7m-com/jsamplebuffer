@@ -18,7 +18,7 @@ package com.io7m.jsamplebuffer.xmedia;
 
 import com.io7m.jintegers.Signed24;
 import com.io7m.jintegers.Unsigned32;
-import com.io7m.jsamplebuffer.api.SampleBufferProviderType;
+import com.io7m.jsamplebuffer.api.SampleBufferFactoryType;
 import com.io7m.jsamplebuffer.api.SampleBufferReadableType;
 import com.io7m.jsamplebuffer.api.SampleBufferType;
 
@@ -35,15 +35,15 @@ import java.util.Objects;
  * Functions to create buffers from audio streams.
  */
 
-public final class SampleBufferXMedia
+public final class SXMSampleBuffers
 {
-  private SampleBufferXMedia()
+  private SXMSampleBuffers()
   {
 
   }
 
   /**
-   * Read all of the given stream into a sample buffer.
+   * Read all the given stream into a sample buffer.
    *
    * @param stream  The stream
    * @param buffers A provider of buffers
@@ -56,7 +56,7 @@ public final class SampleBufferXMedia
 
   public static SampleBufferType sampleBufferOfStream(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException, UnsupportedAudioFileException
   {
     Objects.requireNonNull(stream, "stream");
@@ -98,7 +98,8 @@ public final class SampleBufferXMedia
         sample.channels(),
         sample.channels() * 4,
         (float) sample.sampleRate(),
-        bigEndian());
+        bigEndian()
+      );
 
     final var frame_size = Math.multiplyExact((long) sample.channels(), 4L);
     final var data_size = Math.toIntExact(Math.multiplyExact(sample.frames(), frame_size));
@@ -126,7 +127,7 @@ public final class SampleBufferXMedia
 
   private static SampleBufferType sampleBufferOfStream32(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException, UnsupportedAudioFileException
   {
     final var format = stream.getFormat();
@@ -146,7 +147,7 @@ public final class SampleBufferXMedia
 
   private static SampleBufferType sampleBufferOfStream32Unsigned(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException
   {
     final var format = stream.getFormat();
@@ -176,7 +177,7 @@ public final class SampleBufferXMedia
 
   private static SampleBufferType sampleBufferOfStream32Float(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException
   {
     final var format = stream.getFormat();
@@ -206,7 +207,7 @@ public final class SampleBufferXMedia
 
   private static SampleBufferType sampleBufferOfStream32Signed(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException
   {
     final var format = stream.getFormat();
@@ -236,7 +237,7 @@ public final class SampleBufferXMedia
 
   private static SampleBufferType sampleBufferOfStream24Signed(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException
   {
     final var format = stream.getFormat();
@@ -266,7 +267,7 @@ public final class SampleBufferXMedia
 
   private static SampleBufferType sampleBufferOfStream24Unsigned(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException
   {
     final var format = stream.getFormat();
@@ -296,7 +297,7 @@ public final class SampleBufferXMedia
 
   private static SampleBufferType sampleBufferOfStream24(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException, UnsupportedAudioFileException
   {
     final var format = stream.getFormat();
@@ -312,7 +313,7 @@ public final class SampleBufferXMedia
 
   private static SampleBufferType sampleBufferOfStream16(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException, UnsupportedAudioFileException
   {
     final var format = stream.getFormat();
@@ -328,7 +329,7 @@ public final class SampleBufferXMedia
 
   private static SampleBufferType sampleBufferOfStream8(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException, UnsupportedAudioFileException
   {
     final var format = stream.getFormat();
@@ -344,7 +345,7 @@ public final class SampleBufferXMedia
 
   private static SampleBufferType sampleBufferOfStream8Unsigned(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException
   {
     final var format = stream.getFormat();
@@ -374,7 +375,7 @@ public final class SampleBufferXMedia
 
   private static SampleBufferType sampleBufferOfStream8Signed(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException
   {
     final var format = stream.getFormat();
@@ -404,7 +405,7 @@ public final class SampleBufferXMedia
 
   private static SampleBufferType sampleBufferOfStream16Unsigned(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException
   {
     final var format = stream.getFormat();
@@ -434,7 +435,7 @@ public final class SampleBufferXMedia
 
   private static SampleBufferType sampleBufferOfStream16Signed(
     final AudioInputStream stream,
-    final SampleBufferProviderType buffers)
+    final SampleBufferFactoryType buffers)
     throws IOException
   {
     final var format = stream.getFormat();

@@ -14,24 +14,11 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-import com.io7m.jsamplebuffer.api.SampleBufferRateConverterFactoryType;
-import com.io7m.jsamplebuffer.xmedia.SXMSampleBufferRateConverters;
-
 /**
- * Sample buffer (javax.media Support)
+ * Sample buffer (javax.media Support [internals])
  */
 
-module com.io7m.jsamplebuffer.xmedia
-{
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+@Version("1.0.0")
+package com.io7m.jsamplebuffer.xmedia.internal;
 
-  requires com.io7m.jintegers.core;
-  requires transitive com.io7m.jsamplebuffer.api;
-  requires transitive java.desktop;
-
-  provides SampleBufferRateConverterFactoryType
-    with SXMSampleBufferRateConverters;
-
-  exports com.io7m.jsamplebuffer.xmedia;
-}
+import org.osgi.annotation.versioning.Version;

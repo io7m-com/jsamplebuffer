@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,24 +14,17 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-import com.io7m.jsamplebuffer.api.SampleBufferRateConverterFactoryType;
-import com.io7m.jsamplebuffer.xmedia.SXMSampleBufferRateConverters;
+package com.io7m.jsamplebuffer.api;
 
 /**
- * Sample buffer (javax.media Support)
+ * A factory of sample buffer rate converters.
  */
 
-module com.io7m.jsamplebuffer.xmedia
+public interface SampleBufferRateConverterFactoryType
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+  /**
+   * @return A new rate converter
+   */
 
-  requires com.io7m.jintegers.core;
-  requires transitive com.io7m.jsamplebuffer.api;
-  requires transitive java.desktop;
-
-  provides SampleBufferRateConverterFactoryType
-    with SXMSampleBufferRateConverters;
-
-  exports com.io7m.jsamplebuffer.xmedia;
+  SampleBufferRateConverterType createConverter();
 }

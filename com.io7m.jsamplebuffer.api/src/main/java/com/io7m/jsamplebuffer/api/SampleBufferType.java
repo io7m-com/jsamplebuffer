@@ -17,17 +17,19 @@
 package com.io7m.jsamplebuffer.api;
 
 /**
- * A readable and writable sample buffer.
+ * <p>A readable and writable sample buffer.</p>
  *
- * All methods that take sample/frame indices as arguments throw {@code
- * com.io7m.jranges.RangeCheckException} exceptions if the indices are out of range.
+ * <p>All methods that take sample/frame indices as arguments throw {@code
+ * com.io7m.jranges.RangeCheckException} exceptions if the indices are out of
+ * range.</p>
  */
 
 public interface SampleBufferType extends SampleBufferReadableType
 {
   /**
-   * Set the value of frame {@code index}. If the underlying buffer contains more than one channel,
-   * then the given value is inserted into all channels in the frame.
+   * Set the value of frame {@code index}. If the underlying buffer contains
+   * more than one channel, then the given value is inserted into all channels
+   * in the frame.
    *
    * @param index The frame index
    * @param value The input
@@ -68,8 +70,8 @@ public interface SampleBufferType extends SampleBufferReadableType
     throws IllegalArgumentException;
 
   /**
-   * Set the value of frame {@code index}. The input value is assumed to contain one sample for each
-   * of the channels in the frame.
+   * Set the value of frame {@code index}. The input value is assumed to contain
+   * one sample for each of the channels in the frame.
    *
    * @param index The frame index
    * @param value The input
