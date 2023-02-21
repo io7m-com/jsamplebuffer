@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -17,23 +17,27 @@
 package com.io7m.jsamplebuffer.api;
 
 /**
- * A provider of sample buffers.
+ * A converter of sample rates for buffers.
  */
 
-public interface SampleBufferProviderType
+public interface SampleBufferRateConverterType
 {
   /**
-   * Construct a sample buffer.
+   * Convert the given buffer to the target sample rate (returning a new
+   * buffer).
    *
-   * @param channels    The number of channels
-   * @param frames      The number of frames
-   * @param sample_rate The sample rate
+   * @param sampleBuffers A factory of sample buffers
+   * @param buffer        The source target buffer
+   * @param sampleRate    The target sample rate
    *
-   * @return A new sample buffer
+   * @return A new buffer containing the resampled contents of {@code buffer}
+   *
+   * @throws SampleBufferException On errors
    */
 
-  SampleBufferType createBuffer(
-    int channels,
-    long frames,
-    double sample_rate);
+  SampleBufferType convert(
+    SampleBufferFactoryType sampleBuffers,
+    SampleBufferType buffer,
+    double sampleRate)
+    throws SampleBufferException;
 }

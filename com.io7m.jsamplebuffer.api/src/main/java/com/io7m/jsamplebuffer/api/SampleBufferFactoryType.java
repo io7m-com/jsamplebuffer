@@ -14,24 +14,26 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-import com.io7m.jsamplebuffer.api.SampleBufferRateConverterFactoryType;
-import com.io7m.jsamplebuffer.xmedia.SXMSampleBufferRateConverters;
+package com.io7m.jsamplebuffer.api;
 
 /**
- * Sample buffer (javax.media Support)
+ * A provider of sample buffers.
  */
 
-module com.io7m.jsamplebuffer.xmedia
+public interface SampleBufferFactoryType
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+  /**
+   * Construct a sample buffer.
+   *
+   * @param channels    The number of channels
+   * @param frames      The number of frames
+   * @param sample_rate The sample rate
+   *
+   * @return A new sample buffer
+   */
 
-  requires com.io7m.jintegers.core;
-  requires transitive com.io7m.jsamplebuffer.api;
-  requires transitive java.desktop;
-
-  provides SampleBufferRateConverterFactoryType
-    with SXMSampleBufferRateConverters;
-
-  exports com.io7m.jsamplebuffer.xmedia;
+  SampleBufferType createBuffer(
+    int channels,
+    long frames,
+    double sample_rate);
 }

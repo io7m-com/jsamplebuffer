@@ -1,7 +1,7 @@
 package com.io7m.jsamplebuffer.tests.xmedia;
 
 import com.io7m.jsamplebuffer.vanilla.SampleBufferFloat;
-import com.io7m.jsamplebuffer.xmedia.SampleBufferXMedia;
+import com.io7m.jsamplebuffer.xmedia.SXMSampleBuffers;
 
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
@@ -28,9 +28,9 @@ public final class SampleConversion
 
     try (var input_stream = AudioSystem.getAudioInputStream(input.toFile())) {
       final var sample =
-        SampleBufferXMedia.sampleBufferOfStream(input_stream, SampleBufferFloat::createWithHeapBuffer);
+        SXMSampleBuffers.sampleBufferOfStream(input_stream, SampleBufferFloat::createWithHeapBuffer);
 
-      try (var sample_stream = SampleBufferXMedia.streamOfSampleBuffer(sample)) {
+      try (var sample_stream = SXMSampleBuffers.streamOfSampleBuffer(sample)) {
         final var sample_format =
           sample_stream.getFormat();
 

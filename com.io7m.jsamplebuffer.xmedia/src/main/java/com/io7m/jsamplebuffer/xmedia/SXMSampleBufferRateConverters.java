@@ -1,5 +1,5 @@
 /*
- * Copyright © 2019 Mark Raynsford <code@io7m.com> https://www.io7m.com
+ * Copyright © 2022 Mark Raynsford <code@io7m.com> https://www.io7m.com
  *
  * Permission to use, copy, modify, and/or distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -14,24 +14,34 @@
  * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
+package com.io7m.jsamplebuffer.xmedia;
+
 import com.io7m.jsamplebuffer.api.SampleBufferRateConverterFactoryType;
-import com.io7m.jsamplebuffer.xmedia.SXMSampleBufferRateConverters;
+import com.io7m.jsamplebuffer.api.SampleBufferRateConverterType;
+import com.io7m.jsamplebuffer.xmedia.internal.SXMSampleBufferRateConverter;
 
 /**
- * Sample buffer (javax.media Support)
+ * An implementation of a sample rate converter that uses {@code javax.sound}
+ * to perform the resampling.
  */
 
-module com.io7m.jsamplebuffer.xmedia
+public final class SXMSampleBufferRateConverters
+  implements SampleBufferRateConverterFactoryType
 {
-  requires static org.osgi.annotation.bundle;
-  requires static org.osgi.annotation.versioning;
+  /**
+   * An implementation of a sample rate converter that uses {@code javax.sound}
+   * to perform the resampling.
+   */
 
-  requires com.io7m.jintegers.core;
-  requires transitive com.io7m.jsamplebuffer.api;
-  requires transitive java.desktop;
+  public SXMSampleBufferRateConverters()
+  {
 
-  provides SampleBufferRateConverterFactoryType
-    with SXMSampleBufferRateConverters;
+  }
 
-  exports com.io7m.jsamplebuffer.xmedia;
+  @Override
+  public SampleBufferRateConverterType createConverter()
+  {
+    return new SXMSampleBufferRateConverter();
+  }
 }
