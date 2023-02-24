@@ -22,6 +22,7 @@ import com.io7m.jsamplebuffer.api.SampleBufferFactoryType;
 import com.io7m.jsamplebuffer.api.SampleBufferReadableType;
 import com.io7m.jsamplebuffer.api.SampleBufferType;
 
+import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -47,6 +48,48 @@ public final class SXMSampleBuffers
   }
 
   /**
+   * Write the given sample to the given file in WAVE format.
+   *
+   * @param buffer The sample buffer
+   * @param file   The output file
+   *
+   * @throws IOException On errors
+   */
+
+  public static void writeSampleBufferToFile(
+    final SampleBufferReadableType buffer,
+    final Path file)
+    throws IOException
+  {
+    writeSampleBufferToFile(buffer, AudioFileFormat.Type.WAVE, file);
+  }
+
+  /**
+   * Write the given sample to the given file.
+   *
+   * @param buffer The sample buffer
+   * @param type   The file format
+   * @param file   The output file
+   *
+   * @throws IOException On errors
+   */
+
+  public static void writeSampleBufferToFile(
+    final SampleBufferReadableType buffer,
+    final AudioFileFormat.Type type,
+    final Path file)
+    throws IOException
+  {
+    try (var stream = Files.newOutputStream(file)) {
+      AudioSystem.write(
+        createStreamFromSampleBuffer(buffer),
+        type,
+        stream
+      );
+    }
+  }
+
+  /**
    * Read the given file into a sample buffer.
    *
    * @param file    The file
@@ -59,7 +102,7 @@ public final class SXMSampleBuffers
    *                                       that cannot be processed
    */
 
-  public static SampleBufferType sampleBufferOfFile(
+  public static SampleBufferType readSampleBufferFromFile(
     final Path file,
     final SampleBufferFactoryType buffers)
     throws IOException, UnsupportedAudioFileException
@@ -67,7 +110,7 @@ public final class SXMSampleBuffers
     try (var stream = Files.newInputStream(file)) {
       try (var buffered = new BufferedInputStream(stream)) {
         try (var audioStream = AudioSystem.getAudioInputStream(buffered)) {
-          return sampleBufferOfStream(audioStream, buffers);
+          return readSampleBufferFromStream(audioStream, buffers);
         }
       }
     }
@@ -87,7 +130,7 @@ public final class SXMSampleBuffers
    *                                       processed
    */
 
-  public static SampleBufferType sampleBufferOfStream(
+  public static SampleBufferType readSampleBufferFromStream(
     final AudioInputStream stream,
     final SampleBufferFactoryType buffers)
     throws IOException, UnsupportedAudioFileException
@@ -120,7 +163,7 @@ public final class SXMSampleBuffers
    * @return A stream
    */
 
-  public static AudioInputStream streamOfSampleBuffer(
+  public static AudioInputStream createStreamFromSampleBuffer(
     final SampleBufferReadableType sample)
   {
     final var format =
