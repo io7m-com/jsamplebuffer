@@ -28,9 +28,9 @@ public final class SampleConversion
 
     try (var input_stream = AudioSystem.getAudioInputStream(input.toFile())) {
       final var sample =
-        SXMSampleBuffers.sampleBufferOfStream(input_stream, SampleBufferFloat::createWithHeapBuffer);
+        SXMSampleBuffers.readSampleBufferFromStream(input_stream, SampleBufferFloat::createWithHeapBuffer);
 
-      try (var sample_stream = SXMSampleBuffers.streamOfSampleBuffer(sample)) {
+      try (var sample_stream = SXMSampleBuffers.createStreamFromSampleBuffer(sample)) {
         final var sample_format =
           sample_stream.getFormat();
 

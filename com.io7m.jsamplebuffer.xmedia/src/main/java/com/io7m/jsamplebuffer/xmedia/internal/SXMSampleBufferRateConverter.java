@@ -53,7 +53,7 @@ public final class SXMSampleBufferRateConverter
     final double sampleRate)
     throws SampleBufferException
   {
-    try (var srcStream = SXMSampleBuffers.streamOfSampleBuffer(buffer)) {
+    try (var srcStream = SXMSampleBuffers.createStreamFromSampleBuffer(buffer)) {
       final var srcFormat = srcStream.getFormat();
       final var dstFormat = new AudioFormat(
         srcFormat.getEncoding(),
@@ -69,7 +69,7 @@ public final class SXMSampleBufferRateConverter
       try (var dstStream = AudioSystem.getAudioInputStream(
         dstFormat,
         srcStream)) {
-        return SXMSampleBuffers.sampleBufferOfStream(dstStream, sampleBuffers);
+        return SXMSampleBuffers.readSampleBufferFromStream(dstStream, sampleBuffers);
       }
     } catch (IOException | UnsupportedAudioFileException e) {
       throw new SampleBufferException(e.getMessage(), e);
