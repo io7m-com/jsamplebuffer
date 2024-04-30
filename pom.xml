@@ -45,9 +45,9 @@
   </licenses>
 
   <scm>
-    <url>https://github.com/io7m/jsamplebuffer</url>
-    <connection>scm:git:https://github.com/io7m/jsamplebuffer</connection>
-    <developerConnection>scm:git:https://github.com/io7m/jsamplebuffer</developerConnection>
+    <url>https://www.github.com/io7m-com/jsamplebuffer</url>
+    <connection>scm:git:https://www.github.com/io7m-com/jsamplebuffer</connection>
+    <developerConnection>scm:git:https://www.github.com/io7m-com/jsamplebuffer</developerConnection>
   </scm>
 
   <developers>
@@ -60,7 +60,7 @@
   </developers>
 
   <issueManagement>
-    <url>https://github.com/io7m/jsamplebuffer/issues</url>
+    <url>https://www.github.com/io7m-com/jsamplebuffer/issues</url>
     <system>GitHub Issues</system>
   </issueManagement>
 
@@ -82,7 +82,7 @@
 
   <ciManagement>
     <system>GitHub Actions</system>
-    <url>https://github.com/jsamplebuffer/actions</url>
+    <url>https://www.github.com/io7m-com/jsamplebuffer/actions</url>
   </ciManagement>
 
   <prerequisites>
