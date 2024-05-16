@@ -29,12 +29,15 @@
     <module>com.io7m.jsamplebuffer.vanilla</module>
     <module>com.io7m.jsamplebuffer.tests</module>
     <module>com.io7m.jsamplebuffer.xmedia</module>
-    <module>com.io7m.jsamplebuffer.documentation</module>
   </modules>
 
   <properties>
+    <!-- Configuration. -->
     <io7m.api.previousVersion>0.0.1</io7m.api.previousVersion>
     <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
+
+    <!-- Third-party dependencies. -->
+    <org.junit.version>5.10.2</org.junit.version>
   </properties>
 
   <licenses>
@@ -55,7 +58,7 @@
       <id>io7m</id>
       <name>io7m</name>
       <email>code@io7m.com</email>
-      <url>https://io7m.com</url>
+      <url>https://www.io7m.com</url>
     </developer>
   </developers>
 
@@ -91,37 +94,11 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.immutables</groupId>
-        <artifactId>value</artifactId>
-        <version>2.10.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.immutables.style</groupId>
-        <artifactId>com.io7m.immutables.style</artifactId>
-        <version>0.0.1</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.annotation.versioning</artifactId>
-        <version>1.1.2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.osgi</groupId>
-        <artifactId>org.osgi.annotation.bundle</artifactId>
-        <version>2.0.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.io7m.primogenitor</groupId>
-        <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>8.2.0</version>
-      </dependency>
+      <!-- Core. -->
       <dependency>
         <groupId>com.io7m.jranges</groupId>
         <artifactId>com.io7m.jranges.core</artifactId>
-        <version>5.0.0</version>
+        <version>6.0.0</version>
       </dependency>
       <dependency>
         <groupId>com.io7m.jintegers</groupId>
@@ -134,14 +111,35 @@
         <version>1.5.6</version>
       </dependency>
       <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-engine</artifactId>
-        <version>5.10.2</version>
+        <groupId>org.immutables</groupId>
+        <artifactId>value</artifactId>
+        <version>2.10.1</version>
       </dependency>
       <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>5.10.2</version>
+        <groupId>com.io7m.immutables-style</groupId>
+        <artifactId>com.io7m.immutables-style</artifactId>
+        <version>1.0.0</version>
+      </dependency>
+
+      <!-- Build and metadata. -->
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.annotation.versioning</artifactId>
+        <version>1.1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.annotation.bundle</artifactId>
+        <version>2.0.0</version>
+      </dependency>
+
+      <!-- Test suite. -->
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${org.junit.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
