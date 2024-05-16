@@ -26,9 +26,10 @@ module com.io7m.jsamplebuffer.xmedia
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
+  requires com.io7m.jsamplebuffer.api;
+
   requires com.io7m.jintegers.core;
-  requires transitive com.io7m.jsamplebuffer.api;
-  requires transitive java.desktop;
+  requires java.desktop;
 
   provides SampleBufferRateConverterFactoryType
     with SXMSampleBufferRateConverters;

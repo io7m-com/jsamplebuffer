@@ -10,12 +10,12 @@
   <parent>
     <groupId>com.io7m.primogenitor</groupId>
     <artifactId>com.io7m.primogenitor.full</artifactId>
-    <version>7.5.0</version>
+    <version>8.2.0</version>
   </parent>
 
   <groupId>com.io7m.jsamplebuffer</groupId>
   <artifactId>com.io7m.jsamplebuffer</artifactId>
-  <version>0.0.4</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
 
   <name>com.io7m.jsamplebuffer</name>
@@ -29,24 +29,28 @@
     <module>com.io7m.jsamplebuffer.vanilla</module>
     <module>com.io7m.jsamplebuffer.tests</module>
     <module>com.io7m.jsamplebuffer.xmedia</module>
-    <module>com.io7m.jsamplebuffer.documentation</module>
   </modules>
 
   <properties>
-    <io7m.api.previousVersion>0.0.1</io7m.api.previousVersion>
+    <!-- Configuration. -->
+    <io7m.api.previousVersion>1.0.0</io7m.api.previousVersion>
+    <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
+
+    <!-- Third-party dependencies. -->
+    <org.junit.version>5.10.2</org.junit.version>
   </properties>
 
   <licenses>
     <license>
-      <name>ISC License</name>
+      <name>ISC</name>
       <url>https://io7m.com/license/isc.txt</url>
     </license>
   </licenses>
 
   <scm>
-    <url>https://github.com/io7m/jsamplebuffer</url>
-    <connection>scm:git:https://github.com/io7m/jsamplebuffer</connection>
-    <developerConnection>scm:git:https://github.com/io7m/jsamplebuffer</developerConnection>
+    <url>https://www.github.com/io7m-com/jsamplebuffer</url>
+    <connection>scm:git:https://www.github.com/io7m-com/jsamplebuffer</connection>
+    <developerConnection>scm:git:https://www.github.com/io7m-com/jsamplebuffer</developerConnection>
   </scm>
 
   <developers>
@@ -54,12 +58,12 @@
       <id>io7m</id>
       <name>io7m</name>
       <email>code@io7m.com</email>
-      <url>https://io7m.com</url>
+      <url>https://www.io7m.com</url>
     </developer>
   </developers>
 
   <issueManagement>
-    <url>https://github.com/io7m/jsamplebuffer/issues</url>
+    <url>https://www.github.com/io7m-com/jsamplebuffer/issues</url>
     <system>GitHub Issues</system>
   </issueManagement>
 
@@ -81,7 +85,7 @@
 
   <ciManagement>
     <system>GitHub Actions</system>
-    <url>https://github.com/jsamplebuffer/actions</url>
+    <url>https://www.github.com/io7m-com/jsamplebuffer/actions</url>
   </ciManagement>
 
   <prerequisites>
@@ -90,17 +94,34 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- Core. -->
+      <dependency>
+        <groupId>com.io7m.jranges</groupId>
+        <artifactId>com.io7m.jranges.core</artifactId>
+        <version>6.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.io7m.jintegers</groupId>
+        <artifactId>com.io7m.jintegers.core</artifactId>
+        <version>3.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.5.6</version>
+      </dependency>
       <dependency>
         <groupId>org.immutables</groupId>
         <artifactId>value</artifactId>
-        <version>2.9.3</version>
+        <version>2.10.1</version>
       </dependency>
       <dependency>
-        <groupId>com.io7m.immutables.style</groupId>
-        <artifactId>com.io7m.immutables.style</artifactId>
-        <version>0.0.1</version>
+        <groupId>com.io7m.immutables-style</groupId>
+        <artifactId>com.io7m.immutables-style</artifactId>
+        <version>1.0.0</version>
       </dependency>
 
+      <!-- Build and metadata. -->
       <dependency>
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.annotation.versioning</artifactId>
@@ -112,40 +133,18 @@
         <version>2.0.0</version>
       </dependency>
 
+      <!-- Test suite. -->
       <dependency>
-        <groupId>com.io7m.primogenitor</groupId>
-        <artifactId>com.io7m.primogenitor.support</artifactId>
-        <version>7.5.0</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.jranges</groupId>
-        <artifactId>com.io7m.jranges.core</artifactId>
-        <version>5.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>com.io7m.jintegers</groupId>
-        <artifactId>com.io7m.jintegers.core</artifactId>
-        <version>3.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.4.5</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-engine</artifactId>
-        <version>5.9.2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>5.9.2</version>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${org.junit.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>5.1.1</version>
+        <version>5.12.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

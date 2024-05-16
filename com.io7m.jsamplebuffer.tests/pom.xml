@@ -8,7 +8,7 @@
   <parent>
     <artifactId>com.io7m.jsamplebuffer</artifactId>
     <groupId>com.io7m.jsamplebuffer</groupId>
-    <version>0.0.4</version>
+    <version>1.0.0</version>
   </parent>
 
   <artifactId>com.io7m.jsamplebuffer.tests</artifactId>
@@ -19,7 +19,9 @@
   <url>https://www.io7m.com/software/jsamplebuffer</url>
 
   <properties>
+    <spotbugs.skip>true</spotbugs.skip>
     <mdep.analyze.skip>true</mdep.analyze.skip>
+    <checkstyle.skip>true</checkstyle.skip>
   </properties>
 
   <dependencies>

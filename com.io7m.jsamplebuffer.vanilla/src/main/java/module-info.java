@@ -23,8 +23,7 @@ module com.io7m.jsamplebuffer.vanilla
   requires static org.osgi.annotation.bundle;
   requires static org.osgi.annotation.versioning;
 
-  requires transitive com.io7m.jsamplebuffer.api;
-
+  requires com.io7m.jsamplebuffer.api;
   requires com.io7m.jranges.core;
 
   exports com.io7m.jsamplebuffer.vanilla;

@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <c:changelog project="com.io7m.jsamplebuffer" xmlns:c="urn:com.io7m.changelog:4.0">
-  <c:releases/>
+  <c:releases>
+    <c:release date="2024-05-16T13:31:46+00:00" is-open="false" ticket-system="com.github.io7m.jsamplebuffer" version="1.0.0">
+      <c:changes>
+        <c:change date="2024-05-16T00:00:00+00:00" summary="Initial public release."/>
+      </c:changes>
+    </c:release>
+  </c:releases>
   <c:ticket-systems>
     <c:ticket-system default="true" id="com.github.io7m.jsamplebuffer" url="https://www.github.com/io7m/jsamplebuffer/issues/"/>
   </c:ticket-systems>
