@@ -37,7 +37,7 @@
     <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
 
     <!-- Third-party dependencies. -->
-    <org.junit.version>5.10.2</org.junit.version>
+    <org.junit.version>5.10.3</org.junit.version>
   </properties>
 
   <licenses>
