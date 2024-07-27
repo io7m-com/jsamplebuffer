@@ -17,6 +17,7 @@
 package com.io7m.jsamplebuffer.tests.xmedia;
 
 import com.io7m.jintegers.Signed24;
+import com.io7m.jintegers.Signed64;
 import com.io7m.jintegers.Unsigned16;
 import com.io7m.jintegers.Unsigned32;
 import com.io7m.jintegers.Unsigned8;
@@ -43,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -51,8 +53,11 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static javax.sound.sampled.AudioFormat.Encoding.ALAW;
+import static javax.sound.sampled.AudioFormat.Encoding.PCM_FLOAT;
+import static javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED;
 import static javax.sound.sampled.AudioFormat.Encoding.PCM_UNSIGNED;
 import static javax.sound.sampled.AudioFormat.Encoding.ULAW;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class SXMSampleBuffersTest
 {
@@ -487,9 +492,9 @@ public final class SXMSampleBuffersTest
 
     checkNormalizedMono("testStreamUnsigned8", sample, 3L);
 
-    Assertions.assertEquals(-1.0, sample.frameGetExact(0L), 0.01);
-    Assertions.assertEquals(0.0, sample.frameGetExact(1L), 0.01);
-    Assertions.assertEquals(1.0, sample.frameGetExact(2L), 0.01);
+    assertEquals(-1.0, sample.frameGetExact(0L), 0.01);
+    assertEquals(0.0, sample.frameGetExact(1L), 0.01);
+    assertEquals(1.0, sample.frameGetExact(2L), 0.01);
   }
 
   @Test
@@ -524,9 +529,9 @@ public final class SXMSampleBuffersTest
 
     checkNormalizedMono("testStreamUnsigned16", sample, 3L);
 
-    Assertions.assertEquals(-1.0, sample.frameGetExact(0L), 0.0001);
-    Assertions.assertEquals(0.0, sample.frameGetExact(1L), 0.0001);
-    Assertions.assertEquals(1.0, sample.frameGetExact(2L), 0.0001);
+    assertEquals(-1.0, sample.frameGetExact(0L), 0.0001);
+    assertEquals(0.0, sample.frameGetExact(1L), 0.0001);
+    assertEquals(1.0, sample.frameGetExact(2L), 0.0001);
   }
 
   @Test
@@ -561,9 +566,9 @@ public final class SXMSampleBuffersTest
 
     checkNormalizedMono("testStreamUnsigned24", sample, 3L);
 
-    Assertions.assertEquals(-1.0, sample.frameGetExact(0L), 0.000001);
-    Assertions.assertEquals(0.0, sample.frameGetExact(1L), 0.000001);
-    Assertions.assertEquals(1.0, sample.frameGetExact(2L), 0.000001);
+    assertEquals(-1.0, sample.frameGetExact(0L), 0.000001);
+    assertEquals(0.0, sample.frameGetExact(1L), 0.000001);
+    assertEquals(1.0, sample.frameGetExact(2L), 0.000001);
   }
 
   @Test
@@ -598,11 +603,122 @@ public final class SXMSampleBuffersTest
 
     checkNormalizedMono("testStreamUnsigned32", sample, 3L);
 
-    Assertions.assertEquals(-1.0, sample.frameGetExact(0L), 0.000001);
-    Assertions.assertEquals(0.0, sample.frameGetExact(1L), 0.000001);
-    Assertions.assertEquals(1.0, sample.frameGetExact(2L), 0.000001);
+    assertEquals(-1.0, sample.frameGetExact(0L), 0.000001);
+    assertEquals(0.0, sample.frameGetExact(1L), 0.000001);
+    assertEquals(1.0, sample.frameGetExact(2L), 0.000001);
   }
 
+  @Test
+  public void testStreamUnsigned64()
+    throws Exception
+  {
+    final var format = Mockito.mock(AudioFormat.class);
+    Mockito.when(Integer.valueOf(format.getSampleSizeInBits()))
+      .thenReturn(Integer.valueOf(64));
+    Mockito.when(format.getEncoding())
+      .thenReturn(PCM_UNSIGNED);
+    Mockito.when(Boolean.valueOf(format.isBigEndian()))
+      .thenReturn(Boolean.TRUE);
+    Mockito.when(Integer.valueOf(format.getChannels()))
+      .thenReturn(Integer.valueOf(1));
+
+    final var data = new byte[3 * 8];
+    final var buffer = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN);
+
+    Signed64.packToBuffer(0L, buffer, 0);
+    Signed64.packToBuffer(0x7fffffff_ffffffffL, buffer, 8);
+    Signed64.packToBuffer(0xffffffff_ffffffffL, buffer, 16);
+
+    final var stream = Mockito.mock(AudioInputStream.class);
+    Mockito.when(stream.getFormat()).thenReturn(format);
+    Mockito.when(stream.readAllBytes()).thenReturn(data);
+
+    final var sample =
+      SXMSampleBuffers.readSampleBufferFromStream(
+        stream,
+        SXMSampleBuffersTest::createBuffer);
+
+    checkNormalizedMono("testStreamUnsigned64", sample, 3L);
+
+    assertEquals(-1.0, sample.frameGetExact(0L), 0.000001);
+    assertEquals(0.0, sample.frameGetExact(1L), 0.000001);
+    assertEquals(1.0, sample.frameGetExact(2L), 0.000001);
+  }
+
+  @Test
+  public void testStreamSigned64()
+    throws Exception
+  {
+    final var format = Mockito.mock(AudioFormat.class);
+    Mockito.when(Integer.valueOf(format.getSampleSizeInBits()))
+      .thenReturn(Integer.valueOf(64));
+    Mockito.when(format.getEncoding())
+      .thenReturn(PCM_SIGNED);
+    Mockito.when(Boolean.valueOf(format.isBigEndian()))
+      .thenReturn(Boolean.TRUE);
+    Mockito.when(Integer.valueOf(format.getChannels()))
+      .thenReturn(Integer.valueOf(1));
+
+    final var data = new byte[3 * 8];
+    final var buffer = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN);
+
+    Signed64.packToBuffer(Long.MIN_VALUE, buffer, 0);
+    Signed64.packToBuffer(0L, buffer, 8);
+    Signed64.packToBuffer(Long.MAX_VALUE, buffer, 16);
+
+    final var stream = Mockito.mock(AudioInputStream.class);
+    Mockito.when(stream.getFormat()).thenReturn(format);
+    Mockito.when(stream.readAllBytes()).thenReturn(data);
+
+    final var sample =
+      SXMSampleBuffers.readSampleBufferFromStream(
+        stream,
+        SXMSampleBuffersTest::createBuffer);
+
+    checkNormalizedMono("testStreamSigned64", sample, 3L);
+
+    assertEquals(-1.0, sample.frameGetExact(0L), 0.000001);
+    assertEquals(0.0, sample.frameGetExact(1L), 0.000001);
+    assertEquals(1.0, sample.frameGetExact(2L), 0.000001);
+  }
+
+  @Test
+  public void testStreamFloat64()
+    throws Exception
+  {
+    final var format = Mockito.mock(AudioFormat.class);
+    Mockito.when(Integer.valueOf(format.getSampleSizeInBits()))
+      .thenReturn(Integer.valueOf(64));
+    Mockito.when(format.getEncoding())
+      .thenReturn(PCM_FLOAT);
+    Mockito.when(Boolean.valueOf(format.isBigEndian()))
+      .thenReturn(Boolean.TRUE);
+    Mockito.when(Integer.valueOf(format.getChannels()))
+      .thenReturn(Integer.valueOf(1));
+
+    final var data = new byte[3 * 8];
+    final var buffer = ByteBuffer.wrap(data).order(ByteOrder.BIG_ENDIAN);
+
+    final var doubleBuffer = buffer.asDoubleBuffer();
+    doubleBuffer.put(0, -1.0);
+    doubleBuffer.put(1, 0.0);
+    doubleBuffer.put(2, 1.0);
+
+    final var stream = Mockito.mock(AudioInputStream.class);
+    Mockito.when(stream.getFormat()).thenReturn(format);
+    Mockito.when(stream.readAllBytes()).thenReturn(data);
+
+    final var sample =
+      SXMSampleBuffers.readSampleBufferFromStream(
+        stream,
+        SXMSampleBuffersTest::createBuffer);
+
+    checkNormalizedMono("testStreamSigned64", sample, 3L);
+
+    assertEquals(-1.0, sample.frameGetExact(0L), 0.000001);
+    assertEquals(0.0, sample.frameGetExact(1L), 0.000001);
+    assertEquals(1.0, sample.frameGetExact(2L), 0.000001);
+  }
 
   private void roundTripFile(
     final String file)
@@ -617,7 +733,7 @@ public final class SXMSampleBuffersTest
           SXMSampleBuffersTest::createBuffer
         );
 
-      Assertions.assertEquals(1200L, expectedBuffer.frames());
+      assertEquals(1200L, expectedBuffer.frames());
 
       try (final var sample_stream =
              SXMSampleBuffers.createStreamFromSampleBuffer(expectedBuffer)) {
@@ -626,13 +742,13 @@ public final class SXMSampleBuffersTest
             sample_stream,
             SXMSampleBuffersTest::createBuffer);
 
-        Assertions.assertEquals(
+        assertEquals(
           expectedBuffer.frames(),
           received_buffer.frames());
-        Assertions.assertEquals(
+        assertEquals(
           expectedBuffer.channels(),
           received_buffer.channels());
-        Assertions.assertEquals(
+        assertEquals(
           expectedBuffer.sampleRate(),
           received_buffer.sampleRate());
 
@@ -676,7 +792,7 @@ public final class SXMSampleBuffersTest
           SXMSampleBuffersTest::createBuffer
         );
 
-      Assertions.assertEquals(1200L, expectedBuffer.frames());
+      assertEquals(1200L, expectedBuffer.frames());
 
       SXMSampleBuffers.writeSampleBufferToFile(
         expectedBuffer,
@@ -689,13 +805,13 @@ public final class SXMSampleBuffersTest
           SXMSampleBuffersTest::createBuffer
         );
 
-      Assertions.assertEquals(
+      assertEquals(
         expectedBuffer.frames(),
         receivedBuffer.frames());
-      Assertions.assertEquals(
+      assertEquals(
         expectedBuffer.channels(),
         receivedBuffer.channels());
-      Assertions.assertEquals(
+      assertEquals(
         expectedBuffer.sampleRate(),
         receivedBuffer.sampleRate());
 
@@ -736,9 +852,9 @@ public final class SXMSampleBuffersTest
           stream,
           SXMSampleBuffersTest::createBuffer);
       final var count = 1200L;
-      Assertions.assertEquals(count, buffer.frames());
-      Assertions.assertEquals(1, buffer.channels());
-      Assertions.assertEquals(48000.0, buffer.sampleRate());
+      assertEquals(count, buffer.frames());
+      assertEquals(1, buffer.channels());
+      assertEquals(48000.0, buffer.sampleRate());
       checkNormalizedMono(file, buffer, count);
     } catch (final UnsupportedAudioFileException e) {
       LOGGER.info("Ignoring unsupported audio", e);
@@ -759,9 +875,9 @@ public final class SXMSampleBuffersTest
           stream,
           SXMSampleBuffersTest::createBuffer);
       final var count = 1200L;
-      Assertions.assertEquals(count, buffer.frames());
-      Assertions.assertEquals(2, buffer.channels());
-      Assertions.assertEquals(48000.0, buffer.sampleRate());
+      assertEquals(count, buffer.frames());
+      assertEquals(2, buffer.channels());
+      assertEquals(48000.0, buffer.sampleRate());
       checkNormalizedStereo(file, buffer, count);
     } catch (final UnsupportedAudioFileException e) {
       LOGGER.info("Ignoring unsupported audio", e);

@@ -29,6 +29,7 @@ module com.io7m.jsamplebuffer.xmedia
   requires com.io7m.jsamplebuffer.api;
 
   requires com.io7m.jintegers.core;
+  requires com.io7m.junsigned.core;
   requires java.desktop;
 
   provides SampleBufferRateConverterFactoryType
