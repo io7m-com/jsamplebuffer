@@ -43,7 +43,7 @@
     <com.io7m.immutables.version>1.0.0</com.io7m.immutables.version>
 
     <!-- Third-party dependencies. -->
-    <org.junit.version>5.10.3</org.junit.version>
+    <org.junit.version>5.11.0</org.junit.version>
     <ch.qos.logback.version>1.5.6</ch.qos.logback.version>
   </properties>
 
