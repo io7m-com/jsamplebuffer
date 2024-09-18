@@ -37,7 +37,7 @@
     <io7m.java.targetJavaVersion>21</io7m.java.targetJavaVersion>
 
     <!-- io7m dependencies. -->
-    <com.io7m.junsigned.version>3.0.0</com.io7m.junsigned.version>
+    <com.io7m.junsigned.version>4.0.0</com.io7m.junsigned.version>
     <com.io7m.jranges.version>6.0.0</com.io7m.jranges.version>
     <com.io7m.jintegers.version>3.0.1</com.io7m.jintegers.version>
     <com.io7m.immutables.version>1.0.0</com.io7m.immutables.version>
