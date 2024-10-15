@@ -44,7 +44,7 @@
 
     <!-- Third-party dependencies. -->
     <org.junit.version>5.11.2</org.junit.version>
-    <ch.qos.logback.version>1.5.10</ch.qos.logback.version>
+    <ch.qos.logback.version>1.5.11</ch.qos.logback.version>
   </properties>
 
   <licenses>
