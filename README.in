@@ -90,7 +90,7 @@ converters.createConverter()
   );
 ```
 
-### Parsing/Serializing Buffers
+### Parsing And Serializing Buffers
 
 The `SXMSampleBuffers` class contains numerous convenience methods for
 reading/writing audio buffers from/to audio files using `javax.sound`.

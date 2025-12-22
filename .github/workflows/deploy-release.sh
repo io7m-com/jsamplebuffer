@@ -27,6 +27,11 @@ fi
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
+  <!-- Enable deployment of OCI images. -->
+  <activeProfiles>
+    <activeProfile>io7m-oci-image</activeProfile>
+  </activeProfiles>
+
   <profiles>
     <profile>
       <id>io7m</id>
@@ -40,12 +45,7 @@ fi
 
   <servers>
     <server>
-      <id>sonatype-nexus-snapshots</id>
-      <username>${MAVEN_CENTRAL_USERNAME}</username>
-      <password>${MAVEN_CENTRAL_PASSWORD}</password>
-    </server>
-    <server>
-      <id>sonatype-nexus-staging</id>
+      <id>central</id>
       <username>${MAVEN_CENTRAL_USERNAME}</username>
       <password>${MAVEN_CENTRAL_PASSWORD}</password>
     </server>

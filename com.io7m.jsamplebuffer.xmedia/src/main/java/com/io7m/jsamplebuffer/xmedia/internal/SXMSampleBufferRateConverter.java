@@ -69,7 +69,9 @@ public final class SXMSampleBufferRateConverter
       try (var dstStream = AudioSystem.getAudioInputStream(
         dstFormat,
         srcStream)) {
-        return SXMSampleBuffers.readSampleBufferFromStream(dstStream, sampleBuffers);
+        return SXMSampleBuffers.readSampleBufferFromStream(
+          dstStream,
+          sampleBuffers);
       }
     } catch (IOException | UnsupportedAudioFileException e) {
       throw new SampleBufferException(e.getMessage(), e);
